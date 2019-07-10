@@ -388,14 +388,19 @@ function Remove-ExoMailboxPermission{
     Remove-MailboxPermission -Identity $TargetMailboxOwner -User $User -AccessRights FullAccess -InheritanceType All -confirm:$False
 
 }
+
 function Add-CSVtoO365group{
+
     param(
     [Parameter(Mandatory=$True)]$FilePath,
 	[Parameter(Mandatory=$True)]$GroupName
     )
     Connect-EXO
-    Import-CSV $FilePath | ForEach-Object{Add-UnifiedGroupLinks –Identity $GroupName –LinkType Members –Links $_.member}
+    Import-CSV $FilePath | 
+    ForEach-Object{ Add-UnifiedGroupLinks –Identity $GroupName –LinkType Members –Links $_.member }
 }
+
+
 
 function Add-O365GroupUser{
     param(
@@ -406,66 +411,9 @@ function Add-O365GroupUser{
     Add-UnifiedGroupLinks –Identity $GroupName –LinkType Members –Links $upn
     Write-host "Adding $upn to the group: $GroupName"
 }
-#>
+
 
 function Get-DemoSqlConnectionString{
     return "Data Source=tcp:rmxdemo.database.windows.net,1433;Initial Catalog=RMX-Demo;Authentication=Active Directory Integrated;"
   }
-  <#
-  Function Add-DemoUser{
-      Param(
-      [Parameter(Mandatory=$True)]$FullName
-        )
-       $confirmation = Read-host -Prompt "Creating demo account for $FullName : Proceed? Y/N"
-        If ($confirmation -like 'Y')
-        {
-      $FirstInitial = $FullName.Substring(0,1)
-      $FirstName, $LastName = $FullName -split "\s", 2
-      $accountName = $FirstInitial + $LastName #login name
-      $accountName = $accountName.Tolower()
-      $UPN = $accountName + "@rhythmedix.com" #userprincipalname
-          $SqlConnection = New-Object System.Data.SqlClient.SqlConnection
-          $SqlConnection.ConnectionString = Get-DemoSqlConnectionString
-          $SqlCmd = New-Object System.Data.SqlClient.SqlCommand
-          $SqlCmd.CommandText = "dbo.spSystemCreateuser"  ## this is the stored proc name 
-          $SqlCmd.Connection = $SqlConnection  
-          $SqlCmd.CommandType = [System.Data.CommandType]::StoredProcedure  ## enum that specifies we are calling a SPROC
-          $param1=$SqlCmd.Parameters.Add("@USERNAME" , [System.Data.SqlDbType]::VarChar)
-              $param1.Value = $UPN 
-          $param2=$SqlCmd.Parameters.Add("@FirstName" , [System.Data.SqlDbType]::VarChar)
-              $param2.Value = $FirstName
-          $param3=$SqlCmd.Parameters.Add("@LastName" , [System.Data.SqlDbType]::VarChar)
-              $param3.Value = $LastName 
-  
-          $SqlConnection.Open()
-          $result = $SqlCmd.ExecuteNonQuery() 
-          Write-output " result=$result " 
-          Write-Output "Use any guid generator to generate the last 4 guids (for example https://www.guidgenerator.com/online-guid-generator.aspx), \n
-          then once the script runs it will create an account with generic name, a partner with generic name, and link everything except the user together. \n
-          when that's done, there will be a manual step involved to update account and partner name to include rep's name, associate account with the rep login, \n
-          and set the partner editing schedule to "monitoring center". should be good to go at that point."
-          $SqlConnection.Close()
-        }
-        else {
-            {
-                write-host 'Aborting demo user creation'
-            }
-        }
-  }
-  #>
-  <#
-Export-Modulemember -function Add-NewUser
-Export-Modulemember -function Add-RhythmstarUser
-Export-Modulemember -function Convert-ADUserToCloudOnly 
-Export-Modulemember -function Sync-Azure
-Export-Modulemember -function Export-DLtoCSV
-Export-Modulemember -function Connect-O365Compliance
-Export-Modulemember -function Connect-EXO
-Export-Modulemember -function Remove-Phishing
-Export-Modulemember -function Disconnect-EXO
-Export-Modulemember -function Add-ExoMailboxPermission
-Export-Modulemember -function Remove-ExoMailboxPermission
-Export-Modulemember -function Add-CSVtoO365group
-Export-Modulemember -function Add-O365GroupUser
-Export-Modulemember -function Disconnect-O365Compliance
-Export-Modulemember -function Add-DemoUser #>
+ 
