@@ -279,7 +279,7 @@ function Get-SqlConnectionString(){
   {
       param
       (
-      [mandatory($true)]$accountname
+      [Parameter(mandatory=$true)]$accountname
       )
       $samaccountname = get-aduser -Identity $accountname
       $upn = $SAMaccountname.userprincipalname
@@ -301,7 +301,7 @@ function Get-SqlConnectionString(){
   
   function Export-DLtoCSV{
    param(
-      [Parameter (Mandatory=$True)]$GroupName
+      [Parameter(Mandatory=$True)]$GroupName
       )
       $DGName = $GroupName
           Get-DistributionGroupMember -Identity $DGName | Select-Object Name, PrimarySMTPAddress |
@@ -399,12 +399,12 @@ function Add-CSVtoO365group{
 
 function Add-O365GroupUser{
     param(
-    [Parameter(Mandatory=$True)]$UserName,
-    [Parameter(Mandatory=$True)]$GroupName
+    [Parameter(Mandatory=$True)]$GroupName,
+    [Parameter(Mandatory=$True)]$upn    
     )
     connect-EXO
-    Add-UnifiedGroupLinks –Identity $GroupName –LinkType Members –Links $UserName
-    Write-host "Adding " + $username +" to the group: " + "$GroupName"
+    Add-UnifiedGroupLinks –Identity $GroupName –LinkType Members –Links $upn
+    Write-host "Adding $upn to the group: $GroupName"
 }
 #>
 
