@@ -62,7 +62,10 @@ function Get-SqlConnectionString(){
       [Parameter(Mandatory=$False)]$Rhythmstar,
       [Parameter(Mandatory=$False)]$Location
       )
-  
+
+      
+      do
+      {
       $Ladies = read-host -Prompt "Is this user a lady? Yes or No"
       <#
   
@@ -150,7 +153,22 @@ function Get-SqlConnectionString(){
       $upn = $accountName + "@rhythmedix.com" #userprincipalname
       $email = $upn
       $tempPassword = convertto-securestring "Password1" -asplaintext -force
-  
+      if(!($Department))
+      {
+          $Department = read-host -prompt "What department is $fullname in:"
+      }
+      if(!($Manager))
+      {
+          $Manager= read-host -prompt "Who is $fullname's manager:"
+      }
+      Write-Host "
+                  User Name: $displayname
+                  Title: $title
+                  Department: $Department
+                  Manager: $Manager
+                  Email: $email "
+        $continue = read-host -Prompt "Continue? Y/N"
+    }while($continue -like 'N')
       $user = New-AdUser -Name $displayName -SamAccountName $accountName -AccountPassword $tempPassword -ChangePasswordAtLogon $true -Department $department -Title $title -DisplayName $displayName -EmailAddress $email -GivenName $firstName -Surname $lastName -Manager $manager -UserPrincipalName $upn -Enabled $true -PassThru
   
       #common for everyone
