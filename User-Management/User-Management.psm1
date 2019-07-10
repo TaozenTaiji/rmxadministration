@@ -7,14 +7,32 @@ function Get-SqlConnectionString(){
   
   Function Add-RhythmstarUser{
       Param(
-      [Parameter(Mandatory=$True)]$FullName
+      [Parameter(Mandatory=$True)]$FullName,
+      [Parameter(Mandatory=$false)]$Demo=$false
       )
+      if($demo -eq $False)
+      {
+          $proceed = read-host -prompt "Add: $FullName to the Clinical Rhythmstar Portal? Y/N"
+      }
+      else
+       {
+          $proceed = read-host -prompt "Add: $FullName to the Demo Rhythmstar Portal? Y/N"
+      }
+      if($proceed -like 'Y')
+      {
         $FirstInitial = $FullName.Substring(0,1)
         $FirstName, $LastName = $FullName -split "\s", 2
         $accountName = $FirstInitial + $LastName #login name
         $UPN = $accountName.ToLower() + "@rhythmedix.com" #userprincipalname
-          $SqlConnection = New-Object System.Data.SqlClient.SqlConnection
-          $SqlConnection.ConnectionString = Get-SqlConnectionString
+        $SqlConnection = New-Object System.Data.SqlClient.SqlConnection
+        if($Demo -eq $True)
+        {
+            $SqlConnection.ConnectionString = Get-DemoSqlConnectionString
+        }
+        else 
+        {
+            $SqlConnection.ConnectionString = Get-SqlConnectionString
+        }   
           $SqlCmd = New-Object System.Data.SqlClient.SqlCommand
           $SqlCmd.CommandText = "dbo.spSystemCreateuser"  ## this is the stored proc name 
           $SqlCmd.Connection = $SqlConnection  
@@ -30,6 +48,7 @@ function Get-SqlConnectionString(){
           $result = $SqlCmd.ExecuteNonQuery() 
           Write-output "result=$result" 
           $SqlConnection.Close()
+        }
   }
   
   
@@ -215,7 +234,7 @@ function Get-SqlConnectionString(){
                   Add-AdGroupMember "Regulatory Medical Device" $user
                   Add-AdGroupMember "VPN Users" $user
                   Add-AdGroupMember "Self-Service Password Reset" $user
-                  Add-RhythmstarUser -FullName $FullName
+                  Add-RhythmstarUser -FullName $FullName -Demo:$True
                   Set-MsolUserLicense -UserPrincipalName $upn -AddLicenses "rhythmedix:AAD_Premium"
           }
           'Engineering'
@@ -392,7 +411,7 @@ function Add-O365GroupUser{
 function Get-DemoSqlConnectionString{
     return "Data Source=tcp:rmxdemo.database.windows.net,1433;Initial Catalog=RMX-Demo;Authentication=Active Directory Integrated;"
   }
-  
+  <#
   Function Add-DemoUser{
       Param(
       [Parameter(Mandatory=$True)]$FullName
@@ -433,6 +452,7 @@ function Get-DemoSqlConnectionString{
             }
         }
   }
+  #>
   <#
 Export-Modulemember -function Add-NewUser
 Export-Modulemember -function Add-RhythmstarUser
