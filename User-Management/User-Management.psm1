@@ -415,7 +415,7 @@ function Add-CSVtoO365group{
     )
     Connect-EXO
     Import-CSV $FilePath | 
-    ForEach-Object{ Add-UnifiedGroupLinks –Identity $GroupName –LinkType Members –Links $_.member }
+    ForEach-Object{ Add-UnifiedGroupLinks -Identity $GroupName -LinkType Members -Links $_.member }
 }
 
 
@@ -426,7 +426,7 @@ function Add-O365GroupUser{
     [Parameter(Mandatory=$True)]$upn    
     )
     connect-EXO
-    Add-UnifiedGroupLinks –Identity $GroupName –LinkType Members –Links $upn
+    Add-UnifiedGroupLinks -Identity $GroupName -LinkType Members -Links $upn
     Write-host "Adding $upn to the group: $GroupName"
 }
 
