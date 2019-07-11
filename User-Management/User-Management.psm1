@@ -6,6 +6,7 @@ function Get-SqlConnectionString(){
   }
   
   Function Add-RhythmstarUser{
+    [CmdLetBinding()]
       Param(
       [Parameter(Mandatory=$True)]$FullName,
       [Parameter(Mandatory=$false)]$Demo=$false
@@ -53,6 +54,7 @@ function Get-SqlConnectionString(){
   
   
   function Add-NewUser{
+    [CmdLetBinding()]
       param(
       [Parameter(Mandatory=$True)]$FullName,
       [Parameter(Mandatory=$True)]$Title,
@@ -295,6 +297,7 @@ function Get-SqlConnectionString(){
   }
   function convert-ADUserToCloudOnly 
   {
+    [CmdLetBinding()]
       param
       (
       [Parameter(mandatory=$true)]$accountname
@@ -318,6 +321,7 @@ function Get-SqlConnectionString(){
   
   
   function Export-DLtoCSV{
+    [CmdLetBinding()]
    param(
       [Parameter(Mandatory=$True)]$GroupName
       )
@@ -329,6 +333,8 @@ function Get-SqlConnectionString(){
   
 
   Function Sync-Azure{
+    [CmdLetBinding()]
+    param()
       #PSFile version gives the on-screen feedback but requires ps1 file in the correct folder. The Command version doesn't give feedback but works regardless 
     Invoke-PsExec -ComputerName Galactica -PSFile "C:\powershell tools\Sync_Azure.ps1" 
     <#
@@ -353,6 +359,8 @@ function Get-SqlConnectionString(){
   }
 
   function Connect-O365Compliance{
+    [CmdLetBinding()]
+    param()
     if (!(get-pssession | where-object {$_.ConnectionURI -eq 'https://ps.compliance.protection.outlook.com/powershell-liveid/'}))
 	{
 		$Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://ps.compliance.protection.outlook.com/powershell-liveid/ -Credential $credential -Authentication Basic -AllowRedirection
@@ -361,6 +369,8 @@ function Get-SqlConnectionString(){
 }
 
 function Connect-EXO{
+    [CmdLetBinding()]
+    param()
     #$UserCredential = Get-StoredCredential -Target O365Admin
     if (!(get-pssession | where-object {$_.ConfigurationName -eq 'Microsoft.Exchange'}))
 	{
@@ -371,6 +381,7 @@ function Connect-EXO{
 }
 
 function Remove-Phishing{
+    [CmdLetBinding()]
 	param(
 		[Parameter(Mandatory=$True)]$SearchName
 	)
@@ -379,16 +390,21 @@ function Remove-Phishing{
 }
 
 function Disconnect-EXO{
+    [CmdLetBinding()]
+    param()
 	$ExoSession = get-pssession | where-object {$_.ConfigurationName -eq 'Microsoft.Exchange'}
 	Remove-PSSession $ExoSession
 }
 
 function Disconnect-O365Compliance{
+    [CmdLetBinding()]
+    param()
 	$ComplianceSession = get-pssession | where-object {$_.ConfigurationURI -eq 'https://ps.compliance.protection.outlook.com/powershell-liveid/'}
 	Remove-PSSession $ComplianceSession
 }
 
 function Add-ExoMailboxPermission{
+    [CmdLetBinding()]
 	param( 
 		[string]$MailboxOwner,
 		[string]$User
@@ -398,6 +414,7 @@ function Add-ExoMailboxPermission{
 }
 
 function Remove-ExoMailboxPermission{
+    [CmdLetBinding()]
 
 	param( [string]$TargetMailboxOwner,
 		   [String]$User
@@ -408,6 +425,7 @@ function Remove-ExoMailboxPermission{
 }
 
 function Add-CSVtoO365group{
+    [CmdLetBinding()]
 
     param(
     [Parameter(Mandatory=$True)]$FilePath,
@@ -421,6 +439,7 @@ function Add-CSVtoO365group{
 
 
 function Add-O365GroupUser{
+    [CmdLetBinding()]
     param(
     [Parameter(Mandatory=$True)]$GroupName,
     [Parameter(Mandatory=$True)]$upn    
@@ -432,6 +451,8 @@ function Add-O365GroupUser{
 
 
 function Get-DemoSqlConnectionString{
+    [CmdLetBinding()]
+    param()
     return "Data Source=tcp:rmxdemo.database.windows.net,1433;Initial Catalog=RMX-Demo;Authentication=Active Directory Integrated;"
   }
  
