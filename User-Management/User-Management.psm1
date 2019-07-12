@@ -251,8 +251,6 @@ function Get-SqlConnectionString(){
           'Sales'
           {
               #sales
-                  Add-AdGroupMember "Regulatory Medical Device" $user
-                  Add-DistributionGroupMember -identity "Regulatory Medical Device" -member $upn
                   Add-AdGroupMember "VPN Users" $user
                   Add-AdGroupMember "Self-Service Password Reset" $user
                   Add-RhythmstarUser -FullName $FullName -Demo:$True
