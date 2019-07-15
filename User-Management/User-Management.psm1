@@ -196,7 +196,7 @@ function Get-SqlConnectionString(){
       }
       
       Set-MsolUser -UserPrincipalName $upn -UsageLocation "US"
-      Add-O365GroupUser -GroupName "All Employees" -Username $upn
+      Add-O365GroupUser -GroupName "All Employees" -upn $upn
       
       if ($Ladies -like 'Y')
       {
@@ -222,15 +222,15 @@ function Get-SqlConnectionString(){
                   #monitoring center - arrhythmia analyst + sr. arrhythmia analyst
                   Add-AdGroupMember "Hourly Employees" $user
                 #  Add-AdGroupMember "Monitoring" $user
-                  Add-O365GroupUser -GroupName "RMX Monitoring" -Username $upn
+                  Add-O365GroupUser -upn "RMX Monitoring" -Username $upn
                   Add-RhythmstarUser -FullName $FullName
                   if($location -eq "Leominster")
                   {
-                      add-o365groupuser -GroupName "Leominster Monitoring" -Username $upn
+                      add-o365groupuser -GroupName "Leominster Monitoring" -upn $upn
                   }
                   else
                   {
-                      Add-O365GroupUser -GroupName "Mt Laurel Monitoring" -Username $upn
+                      Add-O365GroupUser -GroupName "Mt Laurel Monitoring" -upn $upn
                   }
               }
           }
@@ -266,7 +266,7 @@ function Get-SqlConnectionString(){
           'IT'
           {
               #IT
-                  Add-O365GroupUser -GroupName "Rhythmedix IT" -Username $upn
+                  Add-O365GroupUser -GroupName "Rhythmedix IT" -upn $upn
                   Add-AdGroupMember "VPN Users" $user
                   Add-AdGroupMember "Self-Service Password Reset" $user
                   Add-RhythmstarUser -FullName $FullName
