@@ -360,6 +360,7 @@ function Get-SqlConnectionString(){
 	{
 		$Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://ps.compliance.protection.outlook.com/powershell-liveid/ -Credential $credential -Authentication Basic -AllowRedirection
         Import-PSSession $Session -DisableNameChecking
+       
     }
 }
 
@@ -371,6 +372,7 @@ function Connect-EXO{
 	{
         $ExoSession = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://outlook.office365.com/powershell-liveid/ -Credential $credential -Authentication Basic -AllowRedirection
         Import-PSSession $ExoSession -DisableNameChecking
+       
 	}
 
 }
