@@ -177,7 +177,7 @@ function Get-SqlConnectionString(){
       #Add-AdGroupMember "All Employees" $user
       Add-AdGroupMember "Azure AD Sync" $user #required group to sync to cloud
       
-      Connect-MsolService -Credential $credential
+      Connect-MsolService -Credential (Get-StoredCredential -Target O365Admin)
       Connect-EXO
       DO
       {		
@@ -308,7 +308,7 @@ function Get-SqlConnectionString(){
       Remove-ADGroupMember -Identity "Azure AD Sync" -Members $samaccountname
   
       Sync-Azure
-      Connect-MsolService -Credential $credential
+      Connect-MsolService -Credential (Get-StoredCredential -Target O365Admin)
       Get-MsolUser -UserPrincipalName $upn -ReturnDeletedUsers | Restore-MsolUser
       Get-MsolUser -UserPrincipalName $upn | Set-MsolUser -ImmutableId ""
       
@@ -358,7 +358,7 @@ function Get-SqlConnectionString(){
     param()
     if (!(get-pssession | where-object {$_.ConnectionURI -eq 'https://ps.compliance.protection.outlook.com/powershell-liveid/'}))
 	{
-		$Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://ps.compliance.protection.outlook.com/powershell-liveid/ -Credential $credential -Authentication Basic -AllowRedirection
+		$Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://ps.compliance.protection.outlook.com/powershell-liveid/ -Credential (Get-StoredCredential -Target O365Admin) -Authentication Basic -AllowRedirection
         Import-PSSession $Session -DisableNameChecking
        
     }
@@ -370,7 +370,7 @@ function Connect-EXO{
     #$UserCredential = Get-StoredCredential -Target O365Admin
     if (!(get-pssession | where-object {$_.ConfigurationName -eq 'Microsoft.Exchange'}))
 	{
-        $ExoSession = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://outlook.office365.com/powershell-liveid/ -Credential $credential -Authentication Basic -AllowRedirection
+        $ExoSession = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://outlook.office365.com/powershell-liveid/ -Credential (Get-StoredCredential -Target O365Admin) -Authentication Basic -AllowRedirection
         Import-PSSession $ExoSession -DisableNameChecking
        
 	}
