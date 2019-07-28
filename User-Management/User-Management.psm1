@@ -273,10 +273,10 @@ function Get-SqlConnectionString(){
                   Add-RhythmstarUser -FullName $FullName
                   Set-MsolUserLicense -UserPrincipalName $upn -AddLicenses "rhythmedix:AAD_Premium"
                  
-                  If($Title -eq "Web Developer")
+                  If($Title -like "Developer")
                   {
-                     Add-O365GroupUser -GroupName "Development" -Username $upn
-                     Add-O365GroupUser -GroupName "Dev Team" -Username $upn
+                     Add-O365GroupUser -GroupName "Development" -Upn $upn
+                     Add-O365GroupUser -GroupName "Dev Team" -Upn $upn
                   }
           }
   
@@ -403,11 +403,11 @@ function Disconnect-O365Compliance{
 function Add-ExoMailboxPermission{
     [CmdLetBinding()]
 	param( 
-		[string]$MailboxOwner,
+		[string]$TargetMailboxOwner,
 		[string]$User
 		)
 	connect-exo
-    Add-MailboxPermission -Identity $MailboxOwner -User $User -AccessRights FullAccess -InheritanceType All -AutoMapping $true
+    Add-MailboxPermission -Identity $TargetMailboxOwner -User $User -AccessRights FullAccess -InheritanceType All -AutoMapping $true
 }
 
 function Remove-ExoMailboxPermission{
