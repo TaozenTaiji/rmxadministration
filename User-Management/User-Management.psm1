@@ -231,6 +231,7 @@ function Get-SqlConnectionString(){
                   else
                   {
                       Add-O365GroupUser -GroupName "Mt Laurel Monitoring" -upn $upn
+                      Add-DistributionGroupMember -Identity "Verbal Orders" -member $upn
                   }
               }
           }
