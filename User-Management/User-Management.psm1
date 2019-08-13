@@ -4,21 +4,41 @@ Install-Module -Name CredentialManager
 function Get-SqlConnectionString(){
     return "Data Source=tcp:rmxprod.database.windows.net,1433;Initial Catalog=rhythmedix;Authentication=Active Directory Integrated;"
   }
+
+  function Get-TolmanSqlConnectionString(){
+    return "Data Source=tcp:rmxprod.database.windows.net,1433;Initial Catalog=Tolman;Authentication=Active Directory Integrated;"
+  }
   
   Function Add-RhythmstarUser{
     [CmdLetBinding()]
       Param(
       [Parameter(Mandatory=$True)]$FullName,
-      [Parameter(Mandatory=$false)]$Demo=$false
+      [Parameter(Mandatory=$false)]$Portal
       )
-      if($demo -eq $False)
+
+      if(!($portal))
       {
-          $proceed = read-host -prompt "Add: $FullName to the Clinical Rhythmstar Portal? Y/N"
+          read-host -prompt 'Which portal? RMX, Demo, or Tolman'
       }
-      else
-       {
-          $proceed = read-host -prompt "Add: $FullName to the Demo Rhythmstar Portal? Y/N"
+      switch($Portal)
+      {
+          'RMX'
+          {
+            $proceed = read-host -prompt "Add: $FullName to the Clinical Rhythmstar Portal? Y/N"
+            $SqlConnection.ConnectionString = Get-SqlConnectionString
+          }
+          'Demo'
+          {
+            $proceed = read-host -prompt "Add: $FullName to the Demo Rhythmstar Portal? Y/N"
+            $SqlConnection.ConnectionString = Get-DemoSqlConnectionString
+          }
+          'Tolman'
+          {
+            $proceed = read-host -prompt "Add: $FullName to the Tolman Rhythmstar Portal? Y/N"
+            $SqlConnection.ConnectionString = Get-TolmanSqlConnectionString
+          }
       }
+    
       if($proceed -like 'Y')
       {
         $FirstInitial = $FullName.Substring(0,1)
@@ -26,14 +46,6 @@ function Get-SqlConnectionString(){
         $accountName = $FirstInitial + $LastName #login name
         $UPN = $accountName.ToLower() + "@rhythmedix.com" #userprincipalname
         $SqlConnection = New-Object System.Data.SqlClient.SqlConnection
-        if($Demo -eq $True)
-        {
-            $SqlConnection.ConnectionString = Get-DemoSqlConnectionString
-        }
-        else 
-        {
-            $SqlConnection.ConnectionString = Get-SqlConnectionString
-        }   
           $SqlCmd = New-Object System.Data.SqlClient.SqlCommand
           $SqlCmd.CommandText = "dbo.spSystemCreateuser"  ## this is the stored proc name 
           $SqlCmd.Connection = $SqlConnection  
@@ -460,7 +472,7 @@ function Get-DemoSqlConnectionString{
       param(
           [Parameter(Mandatory=$False)]$ComputerName,
           [Parameter(Mandatory=$False)]$PrinterDepartment,
-          [Parameter(Mandatory=$False)]$Color='No'
+          [Parameter(Mandatory=$False)]$Color
           )
           $Printer = "*C2503*","*C5502*"
 
