@@ -15,11 +15,14 @@ function Get-SqlConnectionString(){
       [Parameter(Mandatory=$True)]$FullName,
       [Parameter(Mandatory=$false)]$Portal
       )
-      $SqlConnection = New-Object System.Data.SqlClient.SqlConnection
+      
       if(!($portal))
       {
           read-host -prompt 'Which portal? RMX, Demo, or Tolman'
       }
+      
+      $SqlConnection = New-Object System.Data.SqlClient.SqlConnection
+
       switch($Portal)
       {
           'RMX'
@@ -45,7 +48,6 @@ function Get-SqlConnectionString(){
         $FirstName, $LastName = $FullName -split "\s", 2
         $accountName = $FirstInitial + $LastName #login name
         $UPN = $accountName.ToLower() + "@rhythmedix.com" #userprincipalname
-        $SqlConnection = New-Object System.Data.SqlClient.SqlConnection
           $SqlCmd = New-Object System.Data.SqlClient.SqlCommand
           $SqlCmd.CommandText = "dbo.spSystemCreateuser"  ## this is the stored proc name 
           $SqlCmd.Connection = $SqlConnection  
