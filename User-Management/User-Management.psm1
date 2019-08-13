@@ -15,7 +15,7 @@ function Get-SqlConnectionString(){
       [Parameter(Mandatory=$True)]$FullName,
       [Parameter(Mandatory=$false)]$Portal
       )
-
+      $SqlConnection = New-Object System.Data.SqlClient.SqlConnection
       if(!($portal))
       {
           read-host -prompt 'Which portal? RMX, Demo, or Tolman'
