@@ -5,7 +5,7 @@ function Get-SqlConnectionString(){
     return "Data Source=tcp:rmxprod.database.windows.net,1433;Initial Catalog=rhythmedix;Authentication=Active Directory Integrated;"
   }
 
-  function Get-TolmanSqlConnectionString(){
+function Get-TolmanSqlConnectionString(){
     return "Data Source=tcp:rmxprod.database.windows.net,1433;Initial Catalog=Tolman;Authentication=Active Directory Integrated;"
   }
   
