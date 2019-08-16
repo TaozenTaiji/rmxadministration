@@ -18,7 +18,7 @@ function Get-TolmanSqlConnectionString(){
       
       if(!($portal))
       {
-          read-host -prompt 'Which portal? RMX, Demo, or Tolman'
+          $portal = read-host -prompt 'Which portal? RMX, Demo, or Tolman'
       }
       
       $SqlConnection = New-Object System.Data.SqlClient.SqlConnection
