@@ -365,7 +365,7 @@ function Get-TolmanSqlConnectionString(){
   
   Write-Host " | Complete!" -ForegroundColor Green } -IsPSCommand -IsLongPSCommand
     #>
-
+      Disconnect-EXO
   }
 
   function Connect-O365Compliance{
@@ -373,7 +373,8 @@ function Get-TolmanSqlConnectionString(){
     param()
     if (!(get-pssession | where-object {$_.ConnectionURI -eq 'https://ps.compliance.protection.outlook.com/powershell-liveid/'}))
 	{
-		$Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://ps.compliance.protection.outlook.com/powershell-liveid/ -Credential (Get-StoredCredential -Target O365Admin) -Authentication Basic -AllowRedirection
+        $Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://ps.compliance.protection.outlook.com/powershell-liveid/ -Credential (Get-StoredCredential -Target O365Admin) -Authentication Basic -AllowRedirection
+        start-sleep 5
         Import-PSSession $Session -DisableNameChecking
        
     }
@@ -386,6 +387,7 @@ function Connect-EXO{
     if (!(get-pssession | where-object {$_.ConfigurationName -eq 'Microsoft.Exchange'}))
 	{
         $ExoSession = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://outlook.office365.com/powershell-liveid/ -Credential (Get-StoredCredential -Target O365Admin) -Authentication Basic -AllowRedirection
+        start-sleep 5
         Import-PSSession $ExoSession -DisableNameChecking
        
 	}
@@ -398,7 +400,8 @@ function Remove-Phishing{
 		[Parameter(Mandatory=$True)]$SearchName
 	)
     Connect-O365Compliance
-	New-ComplianceSearchAction -SearchName $SearchName -Purge -PurgeType HardDelete
+    New-ComplianceSearchAction -SearchName $SearchName -Purge -PurgeType HardDelete -confirm:$False
+    Disconnect-O365Compliance
 }
 
 function Disconnect-EXO{
@@ -423,6 +426,7 @@ function Add-ExoMailboxPermission{
 		)
 	connect-exo
     Add-MailboxPermission -Identity $TargetMailboxOwner -User $User -AccessRights FullAccess -InheritanceType All -AutoMapping $true
+    Disconnect-EXO
 }
 
 function Remove-ExoMailboxPermission{
@@ -433,6 +437,7 @@ function Remove-ExoMailboxPermission{
 		   )
 		Connect-EXO
     Remove-MailboxPermission -Identity $TargetMailboxOwner -User $User -AccessRights FullAccess -InheritanceType All -confirm:$False
+    Disconnect-EXO
 
 }
 
@@ -446,6 +451,7 @@ function Add-CSVtoO365group{
     Connect-EXO
     Import-CSV $FilePath | 
     ForEach-Object{ Add-UnifiedGroupLinks -Identity $GroupName -LinkType Members -Links $_.member }
+    disconnect-exo
 }
 
 
@@ -459,6 +465,7 @@ function Add-O365GroupUser{
     connect-EXO
     Add-UnifiedGroupLinks -Identity $GroupName -LinkType Members -Links $upn
     Write-host "Adding $upn to the group: $GroupName"
+    Disconnect-EXO
 }
 
 
