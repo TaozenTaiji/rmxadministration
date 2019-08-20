@@ -233,20 +233,27 @@ function Get-TolmanSqlConnectionString(){
               }
               else
               {
+                  $remote = read-host -prompt 'Is the tech a remote only worker?'
                   #monitoring center - arrhythmia analyst + sr. arrhythmia analyst
                   Add-AdGroupMember "Hourly Employees" $user
                 #  Add-AdGroupMember "Monitoring" $user
                   Add-O365GroupUser -upn "RMX Monitoring" -Username $upn
                   Add-RhythmstarUser -FullName $FullName
-                  if($location -eq "Leominster")
+                  if($remote -like 'Y')
                   {
-                      add-o365groupuser -GroupName "Leominster Monitoring" -upn $upn
+                    Set-MsolUserLicense -UserPrincipalName $upn -AddLicenses "rhythmedix:AAD_Premium"
                   }
-                  else
-                  {
-                      Add-O365GroupUser -GroupName "Mt Laurel Monitoring" -upn $upn
-                      Add-DistributionGroupMember -Identity "Verbal Orders" -member $upn
-                  }
+                  else {
+                       if($location -eq "Leominster")
+                        {
+                            add-o365groupuser -GroupName "Leominster Monitoring" -upn $upn
+                        }
+                        else
+                        {
+                            Add-O365GroupUser -GroupName "Mt Laurel Monitoring" -upn $upn
+                            Add-DistributionGroupMember -Identity "Verbal Orders" -member $upn
+                        }
+                    }
               }
           }
           'Clinical Administrators'
