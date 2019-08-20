@@ -76,7 +76,8 @@ function Get-TolmanSqlConnectionString(){
       [Parameter(Mandatory=$False)]$Manager,
       [Parameter(Mandatory=$False)]$Ladies,
       [Parameter(Mandatory=$False)]$Rhythmstar,
-      [Parameter(Mandatory=$False)]$Location
+      [Parameter(Mandatory=$False)]$Location,
+      [Parameter(Mandatory=$False)]$Remote
       )
 
       
@@ -152,13 +153,11 @@ function Get-TolmanSqlConnectionString(){
                   $manager = 'arichmann'
                   break
               }
-          'Sales'
-              {	
-                  $Title = 'Sales Representative'
-                  $Department = 'Sales'
-                  $Manager = 'kgartland'
-                  break
-              }
+         
+      }
+      if($department -like 'Sales')
+      {
+        $Manager = 'kgartland'
       }
                   #'Clinical'
       #"Clinical" #Clinical, Logistics, IT, Sales, Payer Relations, Clinical Administrators, Engineering and Development
@@ -175,7 +174,7 @@ function Get-TolmanSqlConnectionString(){
       }
       if(!($Manager))
       {
-          $Manager= read-host -prompt "Who is $fullname's manager:"
+          $Manager= read-host -prompt "Who is $fullname's manager:(SamAccountName)"
       }
       Write-Host "
                   User Name: $displayname
