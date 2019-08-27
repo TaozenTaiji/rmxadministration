@@ -236,13 +236,15 @@ function Get-TolmanSqlConnectionString(){
                   #monitoring center - arrhythmia analyst + sr. arrhythmia analyst
                   Add-AdGroupMember "Hourly Employees" $user
                 #  Add-AdGroupMember "Monitoring" $user
-                  Add-O365GroupUser -upn "RMX Monitoring" -Username $upn
                   Add-RhythmstarUser -FullName $FullName
                   if($remote -like 'Y')
                   {
                     Set-MsolUserLicense -UserPrincipalName $upn -AddLicenses "rhythmedix:AAD_Premium"
+                    Add-AdGroupMember "Self-Service Password Reset" $user
                   }
                   else {
+                       #  Add-AdGroupMember "Monitoring" $user
+                         Add-O365GroupUser -GroupName "RMX Monitoring" -upn $upn
                        if($location -eq "Leominster")
                         {
                             add-o365groupuser -GroupName "Leominster Monitoring" -upn $upn
