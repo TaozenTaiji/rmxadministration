@@ -383,7 +383,7 @@ function Get-TolmanSqlConnectionString(){
 	{
         $Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://ps.compliance.protection.outlook.com/powershell-liveid/ -Credential (Get-StoredCredential -Target O365Admin) -Authentication Basic -AllowRedirection
         start-sleep 5
-        Import-PSSession $Session -DisableNameChecking
+        Import-PSSession $Session -DisableNameChecking -AllowClobber
        
     }
 }
@@ -396,7 +396,7 @@ function Connect-EXO{
 	{
         $ExoSession = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://outlook.office365.com/powershell-liveid/ -Credential (Get-StoredCredential -Target O365Admin) -Authentication Basic -AllowRedirection
         start-sleep 5
-        Import-PSSession $ExoSession -DisableNameChecking
+        Import-PSSession $ExoSession -DisableNameChecking -AllowClobber
        
 	}
 
