@@ -209,6 +209,14 @@ function Get-TolmanSqlConnectionString(){
       }
       
       Set-MsolUser -UserPrincipalName $upn -UsageLocation "US"
+      if ($Department -eq "Logistics")
+      {
+          Set-MsolUserLicense -UserPrincipalName $upn -AddLicenses "rhythmedix:StandardPACK"
+      }
+      else
+      {
+          Set-MsolUserLicense -UserPrincipalName $upn -AddLicenses "rhythmedix:ENTERPRISEPACK"
+      }
       Add-O365GroupUser -GroupName "All Employees" -upn $upn
       
       if ($Ladies -like 'Y')
@@ -308,14 +316,7 @@ function Get-TolmanSqlConnectionString(){
       
   
   
-      if ($Department -eq "Logistics")
-      {
-          Set-MsolUserLicense -UserPrincipalName $upn -AddLicenses "rhythmedix:StandardPACK"
-      }
-      else
-      {
-          Set-MsolUserLicense -UserPrincipalName $upn -AddLicenses "rhythmedix:ENTERPRISEPACK"
-      }
+  
   
       
   }
