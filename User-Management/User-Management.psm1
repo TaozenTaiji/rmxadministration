@@ -217,6 +217,7 @@ function Get-TolmanSqlConnectionString(){
       {
           Set-MsolUserLicense -UserPrincipalName $upn -AddLicenses "rhythmedix:ENTERPRISEPACK"
       }
+      Start-sleep -seconds 10
       Add-O365GroupUser -GroupName "All Employees" -upn $upn
       
       if ($Ladies -like 'Y')
@@ -416,15 +417,14 @@ function Remove-Phishing{
 function Disconnect-EXO{
     [CmdLetBinding()]
     param()
-	$ExoSession = get-pssession | where-object {$_.ConfigurationName -eq 'Microsoft.Exchange'}
-	Remove-PSSession $ExoSession
-}
+    get-pssession | where-object {$_.ConfigurationName -eq 'Microsoft.Exchange'} | remove-pssession
+	}
 
 function Disconnect-O365Compliance{
     [CmdLetBinding()]
     param()
-	$ComplianceSession = get-pssession | where-object {$_.ConfigurationURI -eq 'https://ps.compliance.protection.outlook.com/powershell-liveid/'}
-	Remove-PSSession $ComplianceSession
+	get-pssession | where-object {$_.ComputerName -like '*compliance*'} | Remove-PSSession
+	
 }
 
 function Add-ExoMailboxPermission{
