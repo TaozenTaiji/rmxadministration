@@ -583,4 +583,34 @@ function Get-DemoSqlConnectionString{
       }
       
   }
-  
+function Update-Productkey
+{
+$License = (Get-WmiObject -query ‘select * from SoftwareLicensingService’).OA3xOriginalProductKey
+slmgr.vbs /ipk $license
+slmgr.vbs /ato
+}
+
+function Add-AdminUser
+{
+net user /add rmxadmin Lozhkin1!
+WMIC USERACCOUNT WHERE "Name='rmxadmin'" SET PasswordExpires=FALSE
+net localgroup administrators rmxadmin /add
+net user administrator /active:no 
+}
+function Add-RMXVpn
+{
+Add-VpnConnection -Name Rhythmedix -ServerAddress 50.228.161.254 -AllUserConnection $true -SplitTunneling $false -authenticationmethod mschapv2 -tunneltype l2tp -l2tppsk 73EE1DB45064CFF9 -encryptionlevel Required -passthru
+}
+
+function ProvisionBitlocker
+{
+    Manage-BDE -On C: -SkipHardwareTest -ComputerName $env:COMPUTERNAME
+    $RecoveryKey = Get-BitLockerVolume -MountPoint C: | Select-Object -ExpandProperty KeyProtector | Where-Object KeyProtectorType -eq 'RecoveryPassword'
+# In case there is no Recovery Password, lets create new one
+if (!$RecoveryKey)
+	{
+	Add-BitLockerKeyProtector -MountPoint "C:" -RecoveryPasswordProtector
+	$RecoveryKey = Get-BitLockerVolume -MountPoint C: | Select-Object -ExpandProperty KeyProtector | Where-Object KeyProtectorType -eq 'RecoveryPassword'
+	}
+    Out-File -InputObject $RecoveryKey -FilePath '\\rocinante\shared\KeyBackupTempFolder\Key.txt'
+}
