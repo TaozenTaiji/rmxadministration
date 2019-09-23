@@ -243,6 +243,9 @@ function Get-TolmanSqlConnectionString(){
               {
                   $remote = read-host -prompt 'Is the tech a remote only worker?'
                   #monitoring center - arrhythmia analyst + sr. arrhythmia analyst
+                  # requires SharepointOnline installation
+                  Connect-SPOService -url "https://rhythmedix-admin.sharepoint.com" -credential (Get-StoredCredential -target O365Admin)
+                  Add-SPOUser -site "https://rhythmedix.sharepoint.com/" -group 'Clinical Team Visitors' -loginname $UPN
                   Add-AdGroupMember "Hourly Employees" $user
                 #  Add-AdGroupMember "Monitoring" $user
                   Add-RhythmstarUser -FullName $FullName
