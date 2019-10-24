@@ -281,6 +281,7 @@ function Get-TolmanSqlConnectionString(){
               #logistics
                   Add-AdGroupMember "Hourly Employees" $user
                   Add-RhythmstarUser -FullName $FullName
+                  Add-O365GroupUser -GroupName 'Logistical Peeps' -upn $upn
                   
           }
           'Sales'
