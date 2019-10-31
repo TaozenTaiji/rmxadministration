@@ -191,7 +191,7 @@ function Get-TolmanSqlConnectionString(){
       Add-AdGroupMember "Azure AD Sync" $user #required group to sync to cloud
       
       Connect-MsolService -Credential (Get-StoredCredential -Target O365Admin)
-      Connect-EXO
+    
       DO
       {		
               Sync-Azure
@@ -217,7 +217,8 @@ function Get-TolmanSqlConnectionString(){
       {
           Set-MsolUserLicense -UserPrincipalName $upn -AddLicenses "rhythmedix:ENTERPRISEPACK"
       }
-      Start-sleep -seconds 10
+      Start-sleep -seconds 30
+      Connect-EXO
       Add-O365GroupUser -GroupName "All Employees" -upn $upn
       
       if ($Ladies -like 'Y')
@@ -244,8 +245,7 @@ function Get-TolmanSqlConnectionString(){
                   $remote = read-host -prompt 'Is the tech a remote only worker?'
                   #monitoring center - arrhythmia analyst + sr. arrhythmia analyst
                   # requires SharepointOnline installation
-                  Connect-SPOService -url "https://rhythmedix-admin.sharepoint.com" -credential (Get-StoredCredential -target O365Admin)
-                  Add-SPOUser -site "https://rhythmedix.sharepoint.com/" -group 'Clinical Team Visitors' -loginname $UPN
+                  Add-ADGroupMember "Clinical Schedule Viewers" $User
                   Add-AdGroupMember "Hourly Employees" $user
                 #  Add-AdGroupMember "Monitoring" $user
                   Add-RhythmstarUser -FullName $FullName
@@ -280,7 +280,7 @@ function Get-TolmanSqlConnectionString(){
           {
               #logistics
                   Add-AdGroupMember "Hourly Employees" $user
-                  Add-RhythmstarUser -FullName $FullName
+                  Add-RhythmstarUser -FullName $FullName -Portal 'RMX'
                   Add-O365GroupUser -GroupName 'Logistical Peeps' -upn $upn
                   
           }
