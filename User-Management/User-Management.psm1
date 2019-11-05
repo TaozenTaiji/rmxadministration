@@ -618,3 +618,17 @@ if (!$RecoveryKey)
 	}
     Out-File -InputObject $RecoveryKey -FilePath '\\rocinante\shared\KeyBackupTempFolder\Key.txt'
 }
+
+
+function Add-RemoteAppUser
+{
+    param(
+    [parameter(Mandatory=$True)]$UPN
+    )
+    $rdsappgroup = "Remote Review"
+    $hostpool = "RemoteReview_HostPool"
+    $tenanname = "RhythMedix Remote Review"
+    Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
+    Add-RdsAppGroupUser -TenantName $tenanname -HostPoolName $hostpool -AppGroupName $rdsappgroup -UserPrincipalName $upn
+    
+}
