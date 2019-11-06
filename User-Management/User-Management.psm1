@@ -620,7 +620,7 @@ if (!$RecoveryKey)
 }
 
 
-function Add-RemoteAppUser
+function Add-WVDAppUser
 {
     param(
     [parameter(Mandatory=$True)]$UPN
@@ -630,6 +630,22 @@ function Add-RemoteAppUser
     $tenanname = "RhythMedix Remote Review"
     Add-AdGroupMember -Identity "Azure AD Domain Services" -Members (Get-ADUser -filter {EmailAddress -eq $upn})
     Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
+    Remove-RdsAppGroupUser -TenantName $tenanname -HostPoolName $hostpool -AppGroupName "Desktop Application Group" -UserPrincipalName $upn
+    Add-RdsAppGroupUser -TenantName $tenanname -HostPoolName $hostpool -AppGroupName $rdsappgroup -UserPrincipalName $upn
+    Sync-Azure   
+}
+
+function Add-WVDDestkopUser
+{
+    param(
+    [parameter(Mandatory=$True)]$UPN
+    )
+    $rdsappgroup = "Desktop Application Group"
+    $hostpool = "RemoteReview_HostPool"
+    $tenanname = "RhythMedix Remote Review"
+    Add-AdGroupMember -Identity "Azure AD Domain Services" -Members (Get-ADUser -filter {EmailAddress -eq $upn})
+    Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
+    Remove-RdsAppGroupUser -TenantName $tenanname -HostPoolName $hostpool -AppGroupName "Remote Review" -UserPrincipalName $upn
     Add-RdsAppGroupUser -TenantName $tenanname -HostPoolName $hostpool -AppGroupName $rdsappgroup -UserPrincipalName $upn
     Sync-Azure   
 }
