@@ -275,6 +275,11 @@ function Get-TolmanSqlConnectionString(){
                   Add-AdGroupMember "Hourly Employees" $user
                   Add-AdGroupMember "Ringcentral Softphone Users" $user
                   Add-RhythmstarUser -FullName $FullName
+                  Add-O365GroupUser -GroupName 'Logistical Peeps' -upn $upn
+                  Add-O365GroupUser -GroupName 'Clinical Admin' -upn $upn
+                  Add-O365GroupUser -GroupName 'Customer Service - Comments' -upn $upn
+                  Add-DistributionGroupMember -Identity "Customer Service" -member $upn
+
           }
           'Logistics'
           {
@@ -520,16 +525,16 @@ function Get-DemoSqlConnectionString{
           {
               if($color -like 'N')
               {
-                  copy-item "\\rocinante\shared\Ricoh Printer Drivers\Users_Package\C2503 BW\Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.5.0.txt" -Destination \\$ComputerName\ADMIN$
-                  copy-item "\\rocinante\shared\Ricoh Printer Drivers\Users_Package\C2503 BW\Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.5.0.exe" -destination \\$ComputerName\ADMIN$
+                  copy-item "\\rocinante\shared\Printer Drivers\Ricoh Printer Drivers\Users_Package\C2503 BW\Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.5.0.txt" -Destination \\$ComputerName\ADMIN$
+                  copy-item "\\rocinante\shared\Printer Drivers\Ricoh Printer Drivers\Users_Package\C2503 BW\Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.5.0.exe" -destination \\$ComputerName\ADMIN$
                   Invoke-Psexec -computername $ComputerName -Command "Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.5.0.exe"
                   remove-item "\\$ComputerName\admin$\Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.5.0.exe"
                   remove-item "\\$ComputerName\admin$\Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.5.0.txt"
               }
               else
               {
-                  copy-item "\\rocinante\shared\Ricoh Printer Drivers\Users_Package\C2503 Color\Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.6.0.txt" -Destination \\$ComputerName\ADMIN$
-                  copy-item "\\rocinante\shared\Ricoh Printer Drivers\Users_Package\C2503 Color\Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.6.0.exe" -destination \\$ComputerName\ADMIN$
+                  copy-item "\\rocinante\shared\Printer Drivers\Ricoh Printer Drivers\Users_Package\C2503 Color\Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.6.0.txt" -Destination \\$ComputerName\ADMIN$
+                  copy-item "\\rocinante\shared\Printer Drivers\Ricoh Printer Drivers\Users_Package\C2503 Color\Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.6.0.exe" -destination \\$ComputerName\ADMIN$
                   Invoke-Psexec -computername $ComputerName -Command "Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.6.0.exe"
                   remove-item "\\$ComputerName\admin$\Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.6.0.exe"
                   remove-item "\\$ComputerName\admin$\Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.6.0.txt"
@@ -537,24 +542,24 @@ function Get-DemoSqlConnectionString{
           }
           'Billing'
           { 
-              copy-item "\\rocinante\shared\Ricoh Printer Drivers\Users_Package\Billing Color\Billing-_Aficio_MP_C5502-TCP_IP-RICOH_Aficio_MP_C5502_PCL_6-64Bit-for64bitOS-1.1.0.txt" -Destination \\$computer\ADMIN$
-              copy-item "\\rocinante\shared\Ricoh Printer Drivers\Users_Package\Billing Color\Billing-_Aficio_MP_C5502-TCP_IP-RICOH_Aficio_MP_C5502_PCL_6-64Bit-for64bitOS-1.1.0.exe" -destination \\$computer\ADMIN$
+              copy-item "\\rocinante\shared\Printer Drivers\Ricoh Printer Drivers\Users_Package\Billing Color\Billing-_Aficio_MP_C5502-TCP_IP-RICOH_Aficio_MP_C5502_PCL_6-64Bit-for64bitOS-1.1.0.txt" -Destination \\$computer\ADMIN$
+              copy-item "\\rocinante\shared\Printer Drivers\Ricoh Printer Drivers\Users_Package\Billing Color\Billing-_Aficio_MP_C5502-TCP_IP-RICOH_Aficio_MP_C5502_PCL_6-64Bit-for64bitOS-1.1.0.exe" -destination \\$computer\ADMIN$
               Invoke-Psexec -computername $ComputerName -Command "Billing-_Aficio_MP_C5502-TCP_IP-RICOH_Aficio_MP_C5502_PCL_6-64Bit-for64bitOS-1.1.0.exe"
               remove-item "Billing-_Aficio_MP_C5502-TCP_IP-RICOH_Aficio_MP_C5502_PCL_6-64Bit-for64bitOS-1.1.0.txt"
               remove-item "Billing-_Aficio_MP_C5502-TCP_IP-RICOH_Aficio_MP_C5502_PCL_6-64Bit-for64bitOS-1.1.0.exe"
   
               if($color -like 'N')
               {
-                  copy-item "\\rocinante\shared\Ricoh Printer Drivers\Users_Package\C2503 BW\Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.5.0.txt" -Destination \\$ComputerName\ADMIN$
-                  copy-item "\\rocinante\shared\Ricoh Printer Drivers\Users_Package\C2503 BW\Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.5.0.exe" -destination \\$ComputerName\ADMIN$
+                  copy-item "\\rocinante\shared\Printer Drivers\Ricoh Printer Drivers\Users_Package\C2503 BW\Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.5.0.txt" -Destination \\$ComputerName\ADMIN$
+                  copy-item "\\rocinante\shared\Printer Drivers\Ricoh Printer Drivers\Users_Package\C2503 BW\Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.5.0.exe" -destination \\$ComputerName\ADMIN$
                   Invoke-Psexec -computername $ComputerName -Command "Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.5.0.exe"
                   remove-item "\\$ComputerName\admin$\Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.5.0.exe"
                   remove-item "\\$ComputerName\admin$\Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.5.0.txt"
               }
               else
               {
-                  copy-item "\\rocinante\shared\Ricoh Printer Drivers\Users_Package\C2503 Color\Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.6.0.txt" -Destination \\$ComputerName\ADMIN$
-                  copy-item "\\rocinante\shared\Ricoh Printer Drivers\Users_Package\C2503 Color\Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.6.0.exe" -destination \\$ComputerName\ADMIN$
+                  copy-item "\\rocinante\shared\Printer Drivers\Ricoh Printer Drivers\Users_Package\C2503 Color\Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.6.0.txt" -Destination \\$ComputerName\ADMIN$
+                  copy-item "\\rocinante\shared\Printer Drivers\Ricoh Printer Drivers\Users_Package\C2503 Color\Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.6.0.exe" -destination \\$ComputerName\ADMIN$
                   Invoke-Psexec -computername $ComputerName -Command "Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.6.0.exe"
                   remove-item "\\$ComputerName\admin$\Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.6.0.exe"
                   remove-item "\\$ComputerName\admin$\Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.6.0.txt"
@@ -563,26 +568,33 @@ function Get-DemoSqlConnectionString{
           'Service'
           {
               Add-PrinterPort -ComputerName $ComputerName -Name "XeroxTCPPort:" -PrinterHostAddress "10.1.10.225"
-              invoke-psexec -ComputerName $ComputerName -command "pnputil /add-driver '\\rocinante\shared\Xerox WorkCentre 6515\Xerox WorkCentre 6515\XeroxPhaser6510_WC6515_PCL6.inf'" 
+              invoke-psexec -ComputerName $ComputerName -command "pnputil /add-driver '\\rocinante\shared\Printer Drivers\Xerox WorkCentre 6515\Xerox WorkCentre 6515\XeroxPhaser6510_WC6515_PCL6.inf'" 
               Add-PrinterDriver -ComputerName $ComputerName -Name "Xerox WorkCentre 6515 V4 PCL6" 
               Add-Printer -ComputerName $ComputerName -Name "Xerox Workstation 6515" -DriverName "Xerox WorkCentre 6515 V4 PCL6" -PortName "XeroxTCPPort:"
   
               if($color -like 'N')
               {
-                  copy-item "\\rocinante\shared\Ricoh Printer Drivers\Users_Package\C2503 BW\Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.5.0.txt" -Destination \\$ComputerName\ADMIN$
-                  copy-item "\\rocinante\shared\Ricoh Printer Drivers\Users_Package\C2503 BW\Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.5.0.exe" -destination \\$ComputerName\ADMIN$
+                  copy-item "\\rocinante\shared\Printer Drivers\Ricoh Printer Drivers\Users_Package\C2503 BW\Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.5.0.txt" -Destination \\$ComputerName\ADMIN$
+                  copy-item "\\rocinante\shared\Printer Drivers\Ricoh Printer Drivers\Users_Package\C2503 BW\Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.5.0.exe" -destination \\$ComputerName\ADMIN$
                   Invoke-Psexec -computername $ComputerName -Command "Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.5.0.exe"
                   remove-item "\\$ComputerName\admin$\Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.5.0.exe"
                   remove-item "\\$ComputerName\admin$\Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.5.0.txt"
               }
               else
               {
-                  copy-item "\\rocinante\shared\Ricoh Printer Drivers\Users_Package\C2503 Color\Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.6.0.txt" -Destination \\$ComputerName\ADMIN$
-                  copy-item "\\rocinante\shared\Ricoh Printer Drivers\Users_Package\C2503 Color\Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.6.0.exe" -destination \\$ComputerName\ADMIN$
+                  copy-item "\\rocinante\shared\Printer Drivers\Ricoh Printer Drivers\Users_Package\C2503 Color\Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.6.0.txt" -Destination \\$ComputerName\ADMIN$
+                  copy-item "\\rocinante\shared\Printer Drivers\Ricoh Printer Drivers\Users_Package\C2503 Color\Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.6.0.exe" -destination \\$ComputerName\ADMIN$
                   Invoke-Psexec -computername $ComputerName -Command "Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.6.0.exe"
                   remove-item "\\$ComputerName\admin$\Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.6.0.exe"
                   remove-item "\\$ComputerName\admin$\Ricoh_C2503-TCP_IP-LANIER_MP_C2503_PCL_6-64Bit-for64bitOS-1.6.0.txt"
               }
+          }
+          'Canon'
+          {
+            Add-PrinterPort -ComputerName $ComputerName -Name "CanonTCPPort:" -PrinterHostAddress "10.2.10.222"
+            invoke-psexec -ComputerName $ComputerName -command "pnputil /add-driver '\\rocinante\shared\Printer Drivers\Canon C5535\Generic Plus PCL6\etc\Cnp60MA64.inf'" 
+            Add-PrinterDriver -ComputerName $ComputerName -Name "Canon Generic Plus PCL6" 
+            Add-Printer -ComputerName $ComputerName -Name "Canon C5535 III" -DriverName "Canon Generic Plus PCL6" -PortName "CanonTCPPort:"
           }
       }
       
@@ -629,6 +641,7 @@ function Add-WVDAppUser
     $hostpool = "RemoteReview_HostPool"
     $tenanname = "RhythMedix Remote Review"
     Add-AdGroupMember -Identity "Azure AD Domain Services" -Members (Get-ADUser -filter {EmailAddress -eq $upn})
+    Sync-Azure
     Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
     Remove-RdsAppGroupUser -TenantName $tenanname -HostPoolName $hostpool -AppGroupName "Desktop Application Group" -UserPrincipalName $upn
     Add-RdsAppGroupUser -TenantName $tenanname -HostPoolName $hostpool -AppGroupName $rdsappgroup -UserPrincipalName $upn
@@ -644,8 +657,9 @@ function Add-WVDDestkopUser
     $hostpool = "RemoteReview_HostPool"
     $tenanname = "RhythMedix Remote Review"
     Add-AdGroupMember -Identity "Azure AD Domain Services" -Members (Get-ADUser -filter {EmailAddress -eq $upn})
+    Sync-Azure
     Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
     Remove-RdsAppGroupUser -TenantName $tenanname -HostPoolName $hostpool -AppGroupName "Remote Review" -UserPrincipalName $upn
     Add-RdsAppGroupUser -TenantName $tenanname -HostPoolName $hostpool -AppGroupName $rdsappgroup -UserPrincipalName $upn
-    Sync-Azure   
+  
 }
