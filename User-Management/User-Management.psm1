@@ -199,14 +199,7 @@ function Get-TolmanSqlConnectionString(){
               Start-Sleep -Seconds 10
       } Until (Get-MsolUser -UserPrincipalName $UPN -ErrorAction SilentlyContinue)
       
-      if($location -ne "Leominster")
-      {
-          Add-AdGroupMember "Mount Laurel Office" $user
-      }
-      else
-      {
-          Add-AdGroupMember "Tolman Office" $user #if user is in MA (not hiring there right now)
-      }
+     
       
       Set-MsolUser -UserPrincipalName $upn -UsageLocation "US"
       if ($Department -eq "Logistics")
@@ -217,9 +210,22 @@ function Get-TolmanSqlConnectionString(){
       {
           Set-MsolUserLicense -UserPrincipalName $upn -AddLicenses "rhythmedix:ENTERPRISEPACK"
       }
-      Start-sleep -seconds 30
+      Start-sleep -seconds 60
       Connect-EXO
       Add-O365GroupUser -GroupName "All Employees" -upn $upn
+      if($location -ne "Leominster")
+      {
+          Add-AdGroupMember "Mount Laurel Office" $user
+          $OnPrem = Read-host -Prompt "Will the user be in the Mt Laurel Office the majority of the time?"
+          if ($OnPrem -like 'y')
+          {
+              Add-O365GroupUser -GroupName 'Mt Laurel Office' -upn $upn
+          }
+      }
+      else
+      {
+          Add-AdGroupMember "Tolman Office" $user #if user is in MA (not hiring there right now)
+      }
       
       if ($Ladies -like 'Y')
       {
