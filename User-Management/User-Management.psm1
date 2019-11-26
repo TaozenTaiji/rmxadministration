@@ -250,10 +250,10 @@ function Get-TolmanSqlConnectionString(){
               {
                   $remote = read-host -prompt 'Is the tech a remote only worker?'
                   #monitoring center - arrhythmia analyst + sr. arrhythmia analyst
-                  # requires SharepointOnline installation
-                  Add-ADGroupMember "Clinical Schedule Viewers" $User
+                 
+                  Add-ADGroupMember "Clinical Schedule Viewers" $User #syncs with sharepoint online permissions
                   Add-AdGroupMember "Hourly Employees" $user
-                #  Add-AdGroupMember "Monitoring" $user
+                  Add-AdGroupMember "Monitoring Techs" -Members $upn
                   Add-RhythmstarUser -FullName $FullName
                   if($remote -like 'Y')
                   {
@@ -280,6 +280,7 @@ function Get-TolmanSqlConnectionString(){
               #clinical admin
                   Add-AdGroupMember "Hourly Employees" $user
                   Add-AdGroupMember "Ringcentral Softphone Users" $user
+                  Add-AdGroupMember "ClinicalAdmins" $user
                   Add-RhythmstarUser -FullName $FullName
                   Add-O365GroupUser -GroupName 'Logistical Peeps' -upn $upn
                   Add-O365GroupUser -GroupName 'Clinical Admin' -upn $upn
@@ -293,6 +294,7 @@ function Get-TolmanSqlConnectionString(){
                   Add-AdGroupMember "Hourly Employees" $user
                   Add-RhythmstarUser -FullName $FullName -Portal 'RMX'
                   Add-O365GroupUser -GroupName 'Logistical Peeps' -upn $upn
+                  Add-AdGroupMember "Logistics" -Members $upn
                   
           }
           'Sales'

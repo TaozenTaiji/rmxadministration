@@ -1,6 +1,6 @@
 # The script queries the selected profile paths to find installed browser extensions and write them into a custom WMI class to be picked up by ConfigMgr Hardware Inventory
 
-Start-Transcript -Path "$env:SystemRoot\Temp\BrowserInventory.log"
+Start-Transcript -Path "\\rocinante\shared\chromeaudit\$env:ComputerName\Temp\BrowserInventory.log"
 
 ################################################################################
 # ***** Configuration Options *****
@@ -350,6 +350,8 @@ Function ReadAppxManifestXML ($strAppxManifestPackageName, $strAppxUser, $strBro
 		
 		# Record the info to WMI
 		RecordExtensionsToWMI $strExtensionNameToRecord $strUserProfilePath $dtFolderDateToRecord $strExtensionFolderNameToRecord $strBrowserDataToFind $strVersionToRecord
+		$outputobject = $strExtensionNameToRecord + " " + $strUserProfilePath + " " +  $dtFolderDateToRecord + " " +  $strExtensionFolderNameToRecord + " " +  $strBrowserDataToFind  + " " +  $strVersionToRecord
+		Out-file -FilePath \\rocinante\shared\ChromeAudit\$env:ComputerName\audit.text -Append -InputObject $outputobject
 	}	
 	
 	
@@ -452,7 +454,7 @@ Function StartConfigMgrInventory ($boolRunFullInventory)
 		# If specified, wipe out the current Hardware Inventory to initiate a full refresh.
 		If ($boolRunFullInventory -eq $true)
 			{
-				Get-WmiObject -Namespace "root\ccm\invagt" -Class InventoryActionStatus | where {$_.InventoryActionID -eq "$strScanType"} | Remove-WmiObject
+				Get-WmiObject -Namespace "root\ccm\invagt" -Class InventoryActionStatus | Where-Object {$_.InventoryActionID -eq "$strScanType"} | Remove-WmiObject
 			}
 
 		# Try to kick off the inventory
