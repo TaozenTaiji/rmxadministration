@@ -50,6 +50,7 @@ Function Prepare-Wmi-Class()
 				
 				Try
 					{
+						
 						$newClass = New-Object System.Management.ManagementClass("root\cimv2", [String]::Empty, $null); 
 
 						$newClass["__CLASS"] = "$CustomWMIClassName";

@@ -647,13 +647,13 @@ function Add-WVDAppUser
     )
     $rdsappgroup = "Remote Review"
     $hostpool = "RemoteReview_HostPool"
-    $tenanname = "RhythMedix Remote Review"
-    Add-AdGroupMember -Identity "Azure AD Domain Services" -Members (Get-ADUser -filter {EmailAddress -eq $upn})
-    Sync-Azure
+    $tenantname = "RhythMedix Remote Review"
+    #Add-AdGroupMember -Identity "Azure AD Domain Services" -Members (Get-ADUser -filter {EmailAddress -eq $upn})
+    #Sync-Azure
     Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
-    Remove-RdsAppGroupUser -TenantName $tenanname -HostPoolName $hostpool -AppGroupName "Desktop Application Group" -UserPrincipalName $upn
-    Add-RdsAppGroupUser -TenantName $tenanname -HostPoolName $hostpool -AppGroupName $rdsappgroup -UserPrincipalName $upn
-    Sync-Azure   
+    Remove-RdsAppGroupUser -TenantName $tenantname -HostPoolName $hostpool -AppGroupName "Desktop Application Group" -UserPrincipalName $upn
+    Add-RdsAppGroupUser -TenantName $tenantname -HostPoolName $hostpool -AppGroupName $rdsappgroup -UserPrincipalName $upn
+    #Sync-Azure   
 }
 
 function Add-WVDDestkopUser
@@ -664,10 +664,34 @@ function Add-WVDDestkopUser
     $rdsappgroup = "Desktop Application Group"
     $hostpool = "RemoteReview_HostPool"
     $tenanname = "RhythMedix Remote Review"
-    Add-AdGroupMember -Identity "Azure AD Domain Services" -Members (Get-ADUser -filter {EmailAddress -eq $upn})
-    Sync-Azure
+    #Add-AdGroupMember -Identity "Azure AD Domain Services" -Members (Get-ADUser -filter {EmailAddress -eq $upn})
+    #Sync-Azure
     Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
     Remove-RdsAppGroupUser -TenantName $tenanname -HostPoolName $hostpool -AppGroupName "Remote Review" -UserPrincipalName $upn
     Add-RdsAppGroupUser -TenantName $tenanname -HostPoolName $hostpool -AppGroupName $rdsappgroup -UserPrincipalName $upn
   
+}
+
+New-WVDRemoteApp{
+    
+    $rdsappgroup = "AppGroupName"
+    $hostpool = "RemoteReview_HostPool"
+    $tenantname = "RhythMedix Remote Review"
+    $filepath = "C:\File\Path.extension"
+    $iconpath = "C:\Windows\system32\mstsc.exe"
+    $rdsappname = "AppName"
+   $rdsappfriendlyname = "App Name in List"
+   New-RDSAppGroup -TenantName $tenantname -HostPoolName $hostpool -AppGroupName $rdsAppGroup -ResourceType "RemoteApp"
+   New-RDSRemoteApp -TenantName $tenantname -HostPoolName $Hostpool -AppGroupName $rdsAppGroup -Name $rdsappname -FilePath $filepath -FriendlyName $rdsappfriendlyname -IconPath $iconpath
+   <#
+    $rdsappgroup = "Holter Manager"
+    New-RDSRemoteApp -TenantName $tenantname -HostPoolName $Hostpool -AppGroupName $rdsappgroup -Name $rdsappname -FilePath $filepath -FriendlyName $rdsappfriendlyname -IconPath $iconpath
+    
+  Add-AdGroupMember -Identity "Azure AD Domain Services" -Members (Get-ADUser -filter {EmailAddress -eq $upn})
+   #Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
+    #Remove-RdsAppGroupUser -TenantName $tenantname -HostPoolName $hostpool -AppGroupName "Desktop Application Group" -UserPrincipalName $upn
+    #Add-RdsAppGroupUser -TenantName $tenantname -HostPoolName $hostpool -AppGroupName $rdsappgroup -UserPrincipalName $upn
+#>
+
+    
 }
