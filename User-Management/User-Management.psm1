@@ -703,14 +703,13 @@ function New-WVDRemoteApp{
             [Parameter()]$User
         )
         #-DateTime 'mm:dd:yyyy hh:mm:ss'
-        [DateTime]$WhenToDisable = Read-Host "What day and time should the user be disabled? (format 'mm:dd:yyyy hh:mm:ss')" 
+        [DateTime]$WhenToDisable = Read-Host "What day and time should the user be disabled? (format 'mm/dd/yyyy hh:mm:ss')" 
         Invoke-Command -ComputerName Galactica -ScriptBlock{
-            param($user)
-            param($WhenToDisable)
+            param($user,$WhenToDisable)
            $tasktrigger = New-ScheduledTaskTrigger -Once -at $WhenToDisable
            $taskprincipal =  New-ScheduledTaskPrincipal -UserId "SYSTEM" -RunLevel Highest -LogonType ServiceAccount
            $taskaction = New-ScheduledTaskAction -Execute "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -Argument "-ExecutionPolicy ByPass -File C:\Disable-ADUser.ps1 $user"
           
-           Register-ScheduledTask -Trigger $tasktrigger -Action $taskaction -Principal $taskprincipal
+           Register-ScheduledTask -TaskName "Disable $user" -Trigger $tasktrigger -Action $taskaction -Principal $taskprincipal
         } -ArgumentList $user,$WhenToDisable
     }
