@@ -672,7 +672,7 @@ function Add-WVDDestkopUser
   
 }
 
-New-WVDRemoteApp{
+function New-WVDRemoteApp{
     
     $rdsappgroup = "AppGroupName"
     $hostpool = "RemoteReview_HostPool"
@@ -691,7 +691,26 @@ New-WVDRemoteApp{
    #Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
     #Remove-RdsAppGroupUser -TenantName $tenantname -HostPoolName $hostpool -AppGroupName "Desktop Application Group" -UserPrincipalName $upn
     #Add-RdsAppGroupUser -TenantName $tenantname -HostPoolName $hostpool -AppGroupName $rdsappgroup -UserPrincipalName $upn
-#>
-
-    
+#>   
 }
+
+
+    function Disable-User
+    {
+        [CmdletBinding()]
+        param (
+         
+            [Parameter()]$User
+        )
+        #-DateTime 'mm:dd:yyyy hh:mm:ss'
+        [DateTime]$WhenToDisable = Read-Host "What day and time should the user be disabled? (format 'mm:dd:yyyy hh:mm:ss')" 
+        Invoke-Command -ComputerName Galactica -ScriptBlock{
+            param($user)
+            param($WhenToDisable)
+           $tasktrigger = New-ScheduledTaskTrigger -Once -at $WhenToDisable
+           $taskprincipal =  New-ScheduledTaskPrincipal -UserId "SYSTEM" -RunLevel Highest -LogonType ServiceAccount
+           $taskaction = New-ScheduledTaskAction -Execute "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -Argument "-ExecutionPolicy ByPass -File C:\Disable-ADUser.ps1 $user"
+          
+           Register-ScheduledTask -Trigger $tasktrigger -Action $taskaction -Principal $taskprincipal
+        } -ArgumentList $user,$WhenToDisable
+    }
