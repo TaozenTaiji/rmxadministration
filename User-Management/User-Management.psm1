@@ -304,8 +304,8 @@ function Get-TolmanSqlConnectionString(){
               #sales
                   Add-AdGroupMember "VPN Users" $user
                   Add-AdGroupMember "Self-Service Password Reset" $user
-                  Add-RhythmstarUser -FullName $FullName -Demo:$True
-                  Add-RhythmstarUser -FullName $FullName -Demo:$False
+                  Add-RhythmstarUser -FullName $FullName -Portal 'RMX'
+                  Add-RhythmstarUser -FullName $FullName -Portal 'Demo'
                   Set-MsolUserLicense -UserPrincipalName $upn -AddLicenses "rhythmedix:AAD_Premium"
           }
           'Engineering'
