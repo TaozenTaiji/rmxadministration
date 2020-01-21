@@ -243,6 +243,7 @@ function Get-TolmanSqlConnectionString(){
                   Add-AdGroupMember "Holter Users" $user
                   Add-AdGroupMember "VPN Users" $user
                   Add-AdGroupMember "Self-Service Password Reset" $user
+                  Add-AdGroupMember "Azure AD Domain Services" $user
                   Set-MsolUserLicense -UserPrincipalName $upn -AddLicenses "rhythmedix:AAD_Premium"
                               
               }
@@ -253,7 +254,7 @@ function Get-TolmanSqlConnectionString(){
                  
                   Add-ADGroupMember "Clinical Schedule Viewers" $User #syncs with sharepoint online permissions
                   Add-AdGroupMember "Hourly Employees" $user
-                  Add-AdGroupMember "Monitoring Techs" -Members $upn
+                  Add-AdGroupMember "Monitoring Techs" -Members $User
                   Add-RhythmstarUser -FullName $FullName
                   if($remote -like 'Y')
                   {
