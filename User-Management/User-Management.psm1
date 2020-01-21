@@ -210,7 +210,8 @@ function Get-TolmanSqlConnectionString(){
       {
           Set-MsolUserLicense -UserPrincipalName $upn -AddLicenses "rhythmedix:ENTERPRISEPACK"
       }
-      Start-sleep -seconds 60
+      Sync-Azure
+      Start-sleep -seconds 30
       Connect-EXO
       Add-O365GroupUser -GroupName "All Employees" -upn $upn
       if($location -ne "Leominster")
