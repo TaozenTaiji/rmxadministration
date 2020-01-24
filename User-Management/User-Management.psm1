@@ -245,6 +245,7 @@ function Get-TolmanSqlConnectionString(){
                   Add-AdGroupMember "VPN Users" $user
                   Add-AdGroupMember "Self-Service Password Reset" $user
                   Add-AdGroupMember "Azure AD Domain Services" $user
+                  Add-RhythmstarUser -Portal 'RMX' -FullName $FullName
                   Set-MsolUserLicense -UserPrincipalName $upn -AddLicenses "rhythmedix:AAD_Premium"
                               
               }
@@ -714,4 +715,9 @@ function New-WVDRemoteApp{
           
            Register-ScheduledTask -TaskName "Disable $user" -Trigger $tasktrigger -Action $taskaction -Principal $taskprincipal
         } -ArgumentList $user,$WhenToDisable
+    }
+
+    function SetComputer-AzureSync
+    {
+        get-adcomputer $env:computername | Add-ADGroupMember "Azure AD Sync"
     }
