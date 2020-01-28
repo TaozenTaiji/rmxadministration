@@ -717,7 +717,7 @@ function New-WVDRemoteApp{
         } -ArgumentList $user,$WhenToDisable
     }
 
-    function SetComputer-AzureSync
+    function Set-AzureComputerSync
     {
         get-adcomputer $env:computername | Add-ADGroupMember "Azure AD Sync"
     }
