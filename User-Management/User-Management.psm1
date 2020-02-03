@@ -614,6 +614,7 @@ function Update-Productkey
 {
 $License = (Get-WmiObject -query ‘select * from SoftwareLicensingService’).OA3xOriginalProductKey
 slmgr.vbs /ipk $license
+start-sleep 30
 slmgr.vbs /ato
 }
 
