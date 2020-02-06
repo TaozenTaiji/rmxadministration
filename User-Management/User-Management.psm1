@@ -208,7 +208,19 @@ function Get-TolmanSqlConnectionString(){
       }
       else
       {
+        If ($department -eq 'Holter Technician')
+        {
+          $contractor = Read-Host "Is user a contractor? Y/N"
+          if ($contractor -like 'y')
+          {
+            Set-MsolUserLicense -UserPrincipalName $upn -AddLicenses "rhythmedix:StandardPACK"
+          }
+          else {
+            Add-AdGroupMember "VPN Users" $user
+          }
           Set-MsolUserLicense -UserPrincipalName $upn -AddLicenses "rhythmedix:ENTERPRISEPACK"
+      }
+   
       }
       Sync-Azure
       Start-sleep -seconds 30
@@ -242,11 +254,11 @@ function Get-TolmanSqlConnectionString(){
               {
                   #holter
                   Add-AdGroupMember "Holter Users" $user
-                  Add-AdGroupMember "VPN Users" $user
                   Add-AdGroupMember "Self-Service Password Reset" $user
                   Add-AdGroupMember "Azure AD Domain Services" $user
                   Add-RhythmstarUser -Portal 'RMX' -FullName $FullName
                   Set-MsolUserLicense -UserPrincipalName $upn -AddLicenses "rhythmedix:AAD_Premium"
+              
                               
               }
               else
