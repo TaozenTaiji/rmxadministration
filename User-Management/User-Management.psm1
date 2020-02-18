@@ -176,15 +176,18 @@ function Get-TolmanSqlConnectionString(){
       {
           $Manager= read-host -prompt "Who is $fullname's manager:(SamAccountName)"
       }
+      $empNumber= " "
+      $empNumber = read-host -prompt "Enter the Employee Number if present:"
       Write-Host "
                   User Name: $displayname
                   Title: $title
                   Department: $Department
                   Manager: $Manager
-                  Email: $email "
+                  Email: $email 
+                  Employee Number: $empNumber"
         $continue = read-host -Prompt "Continue? Y/N"
     }while($continue -like 'N')
-      $user = New-AdUser -Name $displayName -SamAccountName $accountName -AccountPassword $tempPassword -ChangePasswordAtLogon $true -Department $department -Title $title -DisplayName $displayName -EmailAddress $email -GivenName $firstName -Surname $lastName -Manager $manager -UserPrincipalName $upn -Enabled $true -PassThru
+      $user = New-AdUser -Name $displayName -SamAccountName $accountName -AccountPassword $tempPassword -ChangePasswordAtLogon $true -Department $department -Title $title -DisplayName $displayName -EmailAddress $email -GivenName $firstName -Surname $lastName -Manager $manager -UserPrincipalName $upn -EmployeeID $empNumber -Enabled $true -PassThru
   
       #common for everyone
       #Add-AdGroupMember "All Employees" $user
