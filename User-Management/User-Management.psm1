@@ -192,6 +192,7 @@ function Get-TolmanSqlConnectionString(){
       #common for everyone
       #Add-AdGroupMember "All Employees" $user
       Add-AdGroupMember "Azure AD Sync" $user #required group to sync to cloud
+      Add-AdGroupMember "ADP" $user #group that allows SSO with ADP
       
       Connect-MsolService -Credential (Get-StoredCredential -Target O365Admin)
     
@@ -667,10 +668,10 @@ function Add-WVDAppUser
     $rdsappgroup = "Remote Review"
     $hostpool = "RemoteReview_HostPool"
     $tenantname = "RhythMedix Remote Review"
-    #Add-AdGroupMember -Identity "Azure AD Domain Services" -Members (Get-ADUser -filter {EmailAddress -eq $upn})
-    #Sync-Azure
+    Add-AdGroupMember -Identity "Azure AD Domain Services" -Members (Get-ADUser -filter {EmailAddress -eq $upn})
+    Sync-Azure
     Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
-    Remove-RdsAppGroupUser -TenantName $tenantname -HostPoolName $hostpool -AppGroupName "Desktop Application Group" -UserPrincipalName $upn
+    #Remove-RdsAppGroupUser -TenantName $tenantname -HostPoolName $hostpool -AppGroupName "Desktop Application Group" -UserPrincipalName $upn
     Add-RdsAppGroupUser -TenantName $tenantname -HostPoolName $hostpool -AppGroupName $rdsappgroup -UserPrincipalName $upn
     #Sync-Azure   
 }
@@ -692,14 +693,16 @@ function Add-WVDDestkopUser
 }
 
 function New-WVDRemoteApp{
-    
-    $rdsappgroup = "AppGroupName"
-    $hostpool = "RemoteReview_HostPool"
-    $tenantname = "RhythMedix Remote Review"
-    $filepath = "C:\File\Path.extension"
-    $iconpath = "C:\Windows\system32\mstsc.exe"
-    $rdsappname = "AppName"
-   $rdsappfriendlyname = "App Name in List"
+    param(
+    [parameter(Mandatory=$true)]$rdsappgroup,  #"AppGroupName"
+    [parameter(Mandatory=$true)]$hostpool, #"RemoteReview_HostPool"
+    [parameter(Mandatory=$true)]$tenantname, # "RhythMedix Remote Review"
+    [parameter(Mandatory=$true)]$filepath, # "C:\File\Path.extension"
+    [parameter(Mandatory=$true)]$iconpath, # "C:\Windows\system32\mstsc.exe"
+    [parameter(Mandatory=$true)]$rdsappname, # "AppName"
+    [parameter(Mandatory=$true)]$rdsappfriendlyname
+     )# "App Name in List"
+   #>
    New-RDSAppGroup -TenantName $tenantname -HostPoolName $hostpool -AppGroupName $rdsAppGroup -ResourceType "RemoteApp"
    New-RDSRemoteApp -TenantName $tenantname -HostPoolName $Hostpool -AppGroupName $rdsAppGroup -Name $rdsappname -FilePath $filepath -FriendlyName $rdsappfriendlyname -IconPath $iconpath
    <#
