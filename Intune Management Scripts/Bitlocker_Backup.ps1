@@ -26,7 +26,7 @@ $ArgumentPrep = {
     do { 
 
         Clear-Variable -Name BitlockerVolumes,BitlockerVolumesCheck -ErrorAction:SilentlyContinue
-        $BitlockerVolumes = Get-BitLockerVolume | where {$_.ProtectionStatus -eq "On"} | where {($_.KeyProtector).KeyProtectorType -notcontains 'RecoveryPassword'}
+        $BitlockerVolumes = Get-BitLockerVolume | Where-Object {$_.ProtectionStatus -eq "On"} | Where-Object {($_.KeyProtector).KeyProtectorType -notcontains 'RecoveryPassword'}
     
         #$firstrun = $BitlockerVolumes 
         if ($BitlockerVolumes -eq $null) {
@@ -43,7 +43,7 @@ $ArgumentPrep = {
             }
                
             #Laatste check / vergelijking maken voor definitieve afronding of hij gaat de loop weer in
-            $BitlockerVolumesCheck = Get-BitLockerVolume | where ({$_.ProtectionStatus -eq "On"}) | where ({($_.KeyProtector).KeyProtectorType -notcontains 'RecoveryPassword'})
+            $BitlockerVolumesCheck = Get-BitLockerVolume | Where-Object ({$_.ProtectionStatus -eq "On"}) | Where-Object ({($_.KeyProtector).KeyProtectorType -notcontains 'RecoveryPassword'})
             if ($BitlockerVolumesCheck -eq $null) {
                 New-ItemProperty -Path 'HKCU:\Software\EMS\BitlockerPowerShellFix' -Name LastScriptRunTimeUTC -Value $datetime -Force | Out-Null
                 New-ItemProperty -Path 'HKCU:\Software\EMS\BitlockerPowerShellFix' -Name RecoveryPasswordPresent -Value 1 -Force | Out-Null

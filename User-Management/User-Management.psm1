@@ -66,7 +66,25 @@ function Get-TolmanSqlConnectionString(){
         }
   }
   
-  
+  function Disable-WVDSessionHost{
+    [CmdLetBinding()]
+    param()
+    $sessionhost = read-prompt "Which session host? Enter full name: SessionHost.rhythmedix.com"
+ 
+    $hostpool = "RemoteReview_HostPool"
+    $tenantname = "RhythMedix Remote Review"
+     Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
+     Set-RdsSessionHost -TenantName $tenantname -HostPoolName $hostpool -Name $sessionhost -AllowNewSession:$false
+  }
+  function Enable-WVDSessionHost{
+    [CmdLetBinding()]
+    param()
+    $sessionhost = read-prompt "Which session host? Enter full name: SessionHost.rhythmedix.com"
+    $hostpool = "RemoteReview_HostPool"
+    $tenantname = "RhythMedix Remote Review"
+     Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
+     Set-RdsSessionHost -TenantName $tenantname -HostPoolName $hostpool -Name $sessionhost -AllowNewSession:$true
+  }
   function Add-NewUser{
     [CmdLetBinding()]
       param(
