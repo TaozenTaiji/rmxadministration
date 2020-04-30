@@ -85,6 +85,24 @@ function Get-TolmanSqlConnectionString(){
      Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
      Set-RdsSessionHost -TenantName $tenantname -HostPoolName $hostpool -Name $sessionhost -AllowNewSession:$true
   }
+
+  function Get-WVDSession{
+    [CmdLetBinding()]
+    param(
+        [Parameter(Mandatory=$False)]$HostName
+    )
+    $hostpool = "RemoteReview_HostPool"
+    $tenantname = "RhythMedix Remote Review"
+     Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
+    if($HostName)
+    {
+        Get-RdsUserSession -TenantName $tenantname -HostPoolName $hostpool | where-object { $_.SessionHostName -like "$hostname.rhythmedix.com"}
+    }
+    else {
+        Get-RdsUserSession -TenantName $tenantname -HostPoolName $hostpool
+    }
+
+  }
   function Add-NewUser{
     [CmdLetBinding()]
       param(
