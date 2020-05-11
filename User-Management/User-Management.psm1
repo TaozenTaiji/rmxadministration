@@ -66,6 +66,31 @@ function Get-TolmanSqlConnectionString(){
         }
   }
   
+  Function Add-IPWhitelist{
+    [CmdLetBinding()]
+      Param(
+      [Parameter(Mandatory=$True)]$UPN,
+      [Parameter(Mandatory=$true)]$IP
+      )
+      
+    
+      $SqlConnection = New-Object System.Data.SqlClient.SqlConnection
+      $SqlConnection.ConnectionString = Get-SqlConnectionString
+          $SqlCmd = New-Object System.Data.SqlClient.SqlCommand
+          $SqlCmd.CommandText = "dbo.spSystemUpdateFirewall"  ## this is the stored proc name 
+          $SqlCmd.Connection = $SqlConnection  
+          $SqlCmd.CommandType = [System.Data.CommandType]::StoredProcedure  ## enum that specifies we are calling a SPROC
+          #SP format exec [spSystemUpdateFirewall] @UserName = 'vzobrak@rhythmedix.com', @ip = '1.10.1.15'
+          $param1=$SqlCmd.Parameters.Add("@USERNAME" , [System.Data.SqlDbType]::VarChar)
+              $param1.Value = $UPN 
+          $param2=$SqlCmd.Parameters.Add("@IP" , [System.Data.SqlDbType]::VarChar)
+              $param2.Value = $IP
+          $SqlConnection.Open()
+          $result = $SqlCmd.ExecuteNonQuery() 
+          Write-output "result=$result" 
+          $SqlConnection.Close()
+        
+  }
   function Disable-WVDSessionHost{
     [CmdLetBinding()]
     param()
@@ -94,13 +119,13 @@ function Get-TolmanSqlConnectionString(){
     $hostpool = "RemoteReview_HostPool"
     $tenantname = "RhythMedix Remote Review"
      Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
-    if($HostName)
+    #if($HostName -ne $null)
     {
-        Get-RdsUserSession -TenantName $tenantname -HostPoolName $hostpool | where-object { $_.SessionHostName -like "$hostname.rhythmedix.com"}
+      #  Get-RdsUserSession -TenantName $tenantname -HostPoolName $hostpool | where-object { $_.SessionHostName -like $hostname}
     }
-    else {
-        Get-RdsUserSession -TenantName $tenantname -HostPoolName $hostpool
-    }
+    #else {
+       Get-RdsUserSession -TenantName $tenantname -HostPoolName $hostpool
+    #}
 
   }
   function Add-NewUser{
@@ -710,6 +735,11 @@ function Add-WVDAppUser
     #Remove-RdsAppGroupUser -TenantName $tenantname -HostPoolName $hostpool -AppGroupName "Desktop Application Group" -UserPrincipalName $upn
     Add-RdsAppGroupUser -TenantName $tenantname -HostPoolName $hostpool -AppGroupName $rdsappgroup -UserPrincipalName $upn
     #Sync-Azure   
+    $ip = '13.82.111.55'
+    Add-IPWhitelist -UPN $upn -IP $ip
+    $ip = '40.117.194.209'
+    Add-IPWhitelist -UPN $upn -IP $ip
+
 }
 
 function Add-WVDDestkopUser
