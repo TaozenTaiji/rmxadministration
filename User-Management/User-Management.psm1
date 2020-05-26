@@ -453,10 +453,10 @@ function Get-TolmanSqlConnectionString(){
     [CmdLetBinding()]
     param()
       #PSFile version gives the on-screen feedback but requires ps1 file in the correct folder. The Command version doesn't give feedback but works regardless 
-    Invoke-PsExec -ComputerName Galactica -PSFile "C:\powershell tools\Sync_Azure.ps1" 
-    <#
+   # Invoke-PsExec -ComputerName Galactica -PSFile "C:\powershell tools\Sync_Azure.ps1" 
+   Write-Host "Initializing Azure AD Delta Sync..." -ForegroundColor Yellow
     Invoke-PsExec -ComputerName Galactica -Command {
-      Write-Host "Initializing Azure AD Delta Sync..." -ForegroundColor Yellow
+      
   
       Start-ADSyncSyncCycle -PolicyType Delta
   
@@ -471,8 +471,18 @@ function Get-TolmanSqlConnectionString(){
       }
   
   Write-Host " | Complete!" -ForegroundColor Green } -IsPSCommand -IsLongPSCommand
-    #>
-      Disconnect-EXO
+    
+      #Disconnect-EXO
+  }
+
+  function Restart-Holter
+  {
+      [cmdletBinding()]
+      param(
+          [Parameter(Mandatory=$True)]$username
+      )
+      connect-AZaccount -credential (get-storedcredential -target O365Admin)
+    get-azvm -resourcegroup 'RHythmedix-Infrastructure' | where {$_.Tags['tech'] -eq "$username@rhythmedix.com"} | Restart-AZVM
   }
 
   function Connect-O365Compliance{
