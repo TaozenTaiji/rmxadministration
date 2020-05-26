@@ -482,7 +482,7 @@ function Get-TolmanSqlConnectionString(){
           [Parameter(Mandatory=$True)]$username
       )
       connect-AZaccount -credential (get-storedcredential -target O365Admin)
-    get-azvm -resourcegroup 'RHythmedix-Infrastructure' | where {$_.Tags['tech'] -eq "$username@rhythmedix.com"} | Restart-AZVM
+    get-azvm -resourcegroup 'RHythmedix-Infrastructure' | where-object {$_.Tags['tech'] -eq "$username@rhythmedix.com"} | Restart-AZVM
   }
 
   function Connect-O365Compliance{
