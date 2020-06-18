@@ -119,7 +119,7 @@ function Get-TolmanSqlConnectionString(){
     $hostpool = "RemoteReview_HostPool"
     $tenantname = "RhythMedix Remote Review"
      Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
-    if($HostName -ne $null)
+    if($null -ne $HostName)
     {
         Get-RdsUserSession -TenantName $tenantname -HostPoolName $hostpool | where-object { $_.SessionHostName -like $hostname}
     }
@@ -419,7 +419,7 @@ function Get-TolmanSqlConnectionString(){
   
       
   }
-  function convert-ADUserToCloudOnly 
+  function Convert-ADUserToCloudOnly 
   {
     [CmdLetBinding()]
       param
@@ -735,8 +735,9 @@ if (!$RecoveryKey)
 function Add-WVDAppUser
 {
     param(
-    [parameter(Mandatory=$True)]$UPN
+    [parameter(Mandatory=$True)]$user
     )
+    $upn = $user + "@rhythmedix.com"  
     $rdsappgroup = "Remote Review"
     $hostpool = "RemoteReview_HostPool"
     $tenantname = "RhythMedix Remote Review"
@@ -752,6 +753,24 @@ function Add-WVDAppUser
     Add-IPWhitelist -UPN $upn -IP $ip
 
 }
+Invoke-WVDUserDisconnect
+{
+    param(
+        [parameter(Mandatory=$True)]$user
+        )
+        $upn = $user + "@rhythmedix.com"    
+    Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
+    Get-RdsUserSession -TenantName "RhythMedix Remote Review" -HostPoolName "RemoteReview_HostPool" | where-object { $_.UserPrincipalName -eq $upn } | Invoke-RdsUserSessionLogoff -NoUserPrompt
+}
+
+Get-WVDUsers
+{
+    $rdsappgroup = "Remote Review"
+    $hostpool = "RemoteReview_HostPool"
+    $tenantname = "RhythMedix Remote Review"
+    Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
+    Get-RdsAppGroupUser -TenantName $tenantname -HostPoolName $hostpool -AppGroupName $rdsappgroup
+}
 
 function Add-WVDDestkopUser
 {
@@ -760,12 +779,12 @@ function Add-WVDDestkopUser
     )
     $rdsappgroup = "Desktop Application Group"
     $hostpool = "RemoteReview_HostPool"
-    $tenanname = "RhythMedix Remote Review"
+    $tenantname = "RhythMedix Remote Review"
     #Add-AdGroupMember -Identity "Azure AD Domain Services" -Members (Get-ADUser -filter {EmailAddress -eq $upn})
     #Sync-Azure
     Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
-    Remove-RdsAppGroupUser -TenantName $tenanname -HostPoolName $hostpool -AppGroupName "Remote Review" -UserPrincipalName $upn
-    Add-RdsAppGroupUser -TenantName $tenanname -HostPoolName $hostpool -AppGroupName $rdsappgroup -UserPrincipalName $upn
+    Remove-RdsAppGroupUser -TenantName $tenantname -HostPoolName $hostpool -AppGroupName "Remote Review" -UserPrincipalName $upn
+    Add-RdsAppGroupUser -TenantName $tenantname -HostPoolName $hostpool -AppGroupName $rdsappgroup -UserPrincipalName $upn
   
 }
 
