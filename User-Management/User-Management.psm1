@@ -753,7 +753,7 @@ function Add-WVDAppUser
     Add-IPWhitelist -UPN $upn -IP $ip
 
 }
-Invoke-WVDUserDisconnect
+function Invoke-WVDUserDisconnect
 {
     param(
         [parameter(Mandatory=$True)]$user
@@ -763,7 +763,7 @@ Invoke-WVDUserDisconnect
     Get-RdsUserSession -TenantName "RhythMedix Remote Review" -HostPoolName "RemoteReview_HostPool" | where-object { $_.UserPrincipalName -eq $upn } | Invoke-RdsUserSessionLogoff -NoUserPrompt
 }
 
-Get-WVDUsers
+function Get-WVDUsers
 {
     $rdsappgroup = "Remote Review"
     $hostpool = "RemoteReview_HostPool"
