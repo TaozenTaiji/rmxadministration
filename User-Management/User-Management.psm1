@@ -121,7 +121,7 @@ function Get-TolmanSqlConnectionString(){
      Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
     if($null -ne $HostName)
     {
-        Get-RdsUserSession -TenantName $tenantname -HostPoolName $hostpool | where-object { $_.SessionHostName -like $hostname}
+        Get-RdsUserSession -TenantName $tenantname -HostPoolName $hostpool | where-object { $_.SessionHostName -like $hostname} | out-host
     }
     else 
     {
