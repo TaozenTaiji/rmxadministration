@@ -132,7 +132,10 @@ function Get-TolmanSqlConnectionString(){
   function Add-NewUser{
     [CmdLetBinding()]
       param(
-      [Parameter(Mandatory=$True)]$FullName,
+      [Parameter(Mandatory=$True)]$GivenName,
+      [Parameter(Mandatory=$True)]$SurName,
+      [Parameter(Mandatory=$True)]$DisplayName,
+      [Parameter(Mandatory=$False)]$suffix="",
       [Parameter(Mandatory=$True)]$Title,
       [Parameter(Mandatory=$False)]$Department,
       [Parameter(Mandatory=$False)]$Manager,
@@ -173,16 +176,18 @@ function Get-TolmanSqlConnectionString(){
           Licenses:
               E3 - everyone going forward except for Logistics
               E1 - only logistics
-              AD P1 - holter, sales, VPs and anyone else who has a laptop/VPN
+              EMS E3 - holter, sales, VPs and anyone else who has a laptop/VPN
   
           To order/change license count - send email to Strong, Katrina <Katrina.Strong@softwareone.com> with number of licenses to add/remove. 
           We have our enterprise agreement with Microsoft through software one.
       #>
   
-      $FirstInitial = $FullName.Substring(0,1)
-      $FirstName, $LastName = $FullName -split "\s", 2
-      $accountName = $FirstInitial + $LastName #login name
-      $accountName = $accountName.Tolower()
+        $pattern = '[^a-zA-Z]'
+        $samaccountname = ($givenname[0] + ($surname -replace $pattern, '') + $suffix).tolower()
+        $displayname = $givenname + " $surname $suffix"
+      
+      
+     
       switch($Title)
       {
           'Arrhythmia Analyst'
@@ -226,17 +231,17 @@ function Get-TolmanSqlConnectionString(){
       #$title = "Arrhythmia Analyst" #"Product Distribution Specialist" #"Clinical Administrator" #"Arrhythmia Analyst" #"Holter Technician" #"Sr. Arrhythmia Analyst"
       #$manager = "tcatling" #don't need UPN here, just login name (first portion) #tcatling, evalentine, arichmann, ndemiranda
   
-      $displayName = $firstName + " " + $lastName
-      $upn = $accountName + "@rhythmedix.com" #userprincipalname
-      $email = $upn
+      
+      $upn = $samaccountName + "@rhythmedix.com" #userprincipalname
+     
       $tempPassword = convertto-securestring "Password1" -asplaintext -force
       if(!($Department))
       {
-          $Department = read-host -prompt "What department is $fullname in:"
+          $Department = read-host -prompt "What department is $displayname in:"
       }
       if(!($Manager))
       {
-          $Manager= read-host -prompt "Who is $fullname's manager:(SamAccountName)"
+          $Manager= read-host -prompt "Who is $displayname's manager:(SamAccountName)"
       }
       $empNumber= " "
       $empNumber = read-host -prompt "Enter the Employee Number if present:"
@@ -245,11 +250,11 @@ function Get-TolmanSqlConnectionString(){
                   Title: $title
                   Department: $Department
                   Manager: $Manager
-                  Email: $email 
+                  Email: $upn 
                   Employee Number: $empNumber"
         $continue = read-host -Prompt "Continue? Y/N"
     }while($continue -like 'N')
-      $user = New-AdUser -Name $displayName -SamAccountName $accountName -AccountPassword $tempPassword -ChangePasswordAtLogon $true -Department $department -Title $title -DisplayName $displayName -EmailAddress $email -GivenName $firstName -Surname $lastName -Manager $manager -UserPrincipalName $upn -EmployeeID $empNumber -Enabled $true -PassThru
+      $user = New-AdUser -Name $displayName -SamAccountName $samaccountName -AccountPassword $tempPassword -ChangePasswordAtLogon $true -Department $department -Title $title -DisplayName $displayName -EmailAddress $upn -GivenName $givenName -Surname $surname -Manager $manager -UserPrincipalName $upn -EmployeeID $empNumber -Enabled $true -PassThru
   
       #common for everyone
       #Add-AdGroupMember "All Employees" $user
@@ -385,7 +390,7 @@ function Get-TolmanSqlConnectionString(){
                   Add-AdGroupMember "Self-Service Password Reset" $user
                   Add-RhythmstarUser -FullName $FullName -Portal 'RMX'
                   Add-RhythmstarUser -FullName $FullName -Portal 'Demo'
-                  Set-MsolUserLicense -UserPrincipalName $upn -AddLicenses "rhythmedix:AAD_Premium"
+                  Set-MsolUserLicense -UserPrincipalName $upn -AddLicenses "rhythmedix:EMS"
           }
           'Engineering'
           {
@@ -401,7 +406,7 @@ function Get-TolmanSqlConnectionString(){
                   Add-AdGroupMember "VPN Users" $user
                   Add-AdGroupMember "Self-Service Password Reset" $user
                   Add-RhythmstarUser -FullName $FullName
-                  Set-MsolUserLicense -UserPrincipalName $upn -AddLicenses "rhythmedix:AAD_Premium"
+                  Set-MsolUserLicense -UserPrincipalName $upn -AddLicenses "rhythmedix:EMS"
                  
                   If($Title -like "Developer")
                   {
