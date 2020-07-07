@@ -134,7 +134,6 @@ function Get-TolmanSqlConnectionString(){
       param(
       [Parameter(Mandatory=$True)]$GivenName,
       [Parameter(Mandatory=$True)]$SurName,
-      [Parameter(Mandatory=$True)]$DisplayName,
       [Parameter(Mandatory=$False)]$suffix="",
       [Parameter(Mandatory=$True)]$Title,
       [Parameter(Mandatory=$False)]$Department,
@@ -777,7 +776,7 @@ function Get-WVDUsers
     $hostpool = "RemoteReview_HostPool"
     $tenantname = "RhythMedix Remote Review"
     Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
-    Get-RdsAppGroupUser -TenantName $tenantname -HostPoolName $hostpool -AppGroupName $rdsappgroup
+    Get-RdsAppGroupUser -TenantName $tenantname -HostPoolName $hostpool -AppGroupName $rdsappgroup | Out-Host
 }
 
 function Add-WVDDestkopUser
