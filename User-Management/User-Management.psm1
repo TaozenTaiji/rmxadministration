@@ -288,8 +288,11 @@ function Get-TolmanSqlConnectionString(){
           }
           else {
             Add-AdGroupMember "VPN Users" $user
+            Set-MsolUserLicense -UserPrincipalName $upn -AddLicenses "rhythmedix:ENTERPRISEPACK"
           }
-          Set-MsolUserLicense -UserPrincipalName $upn -AddLicenses "rhythmedix:ENTERPRISEPACK"
+          else {
+            Set-MsolUserLicense -UserPrincipalName $upn -AddLicenses "rhythmedix:ENTERPRISEPACK"
+          }
       }
    
       }
