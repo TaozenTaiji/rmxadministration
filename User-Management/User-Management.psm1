@@ -183,7 +183,15 @@ function Get-TolmanSqlConnectionString(){
   
         $pattern = '[^a-zA-Z]'
         $samaccountname = ($givenname[0] + ($surname -replace $pattern, '') + $suffix).tolower()
-        $displayname = $givenname + " $surname $suffix"
+        if ($suffix -ne "")
+        {
+              $displayname = $givenname + " $surname $suffix"
+        }
+        else {
+            $displayname = $givenname + " $surname"
+        }
+
+        $FullName = $displayname
       
       
      
@@ -278,22 +286,24 @@ function Get-TolmanSqlConnectionString(){
       }
       else
       {
-        If ($department -eq 'Holter Technician')
+        If ($title -eq 'Holter Technician')
         {
           $contractor = Read-Host "Is user a contractor? Y/N"
           if ($contractor -like 'y')
           {
             Set-MsolUserLicense -UserPrincipalName $upn -AddLicenses "rhythmedix:StandardPACK"
           }
-          else {
+          else 
+          {
             Add-AdGroupMember "VPN Users" $user
             Set-MsolUserLicense -UserPrincipalName $upn -AddLicenses "rhythmedix:ENTERPRISEPACK"
           }
-          else {
-            Set-MsolUserLicense -UserPrincipalName $upn -AddLicenses "rhythmedix:ENTERPRISEPACK"
-          }
+          
+       }
+      else 
+      {
+        Set-MsolUserLicense -UserPrincipalName $upn -AddLicenses "rhythmedix:ENTERPRISEPACK"
       }
-   
       }
       Sync-Azure
       Start-sleep -seconds 30
