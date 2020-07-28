@@ -98,7 +98,7 @@ function Get-TolmanSqlConnectionString(){
  
     $hostpool = "RemoteReview_HostPool"
     $tenantname = "RhythMedix Remote Review"
-     Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
+     Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" <#-credential (get-storedcredential -target O365Admin)#>
      Set-RdsSessionHost -TenantName $tenantname -HostPoolName $hostpool -Name $sessionhost -AllowNewSession:$false
   }
   function Enable-WVDSessionHost{
@@ -107,7 +107,7 @@ function Get-TolmanSqlConnectionString(){
     $sessionhost = read-host -prompt "Which session host? Enter full name: SessionHost.rhythmedix.com"
     $hostpool = "RemoteReview_HostPool"
     $tenantname = "RhythMedix Remote Review"
-     Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
+     Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" <#-credential (get-storedcredential -target O365Admin)#>
      Set-RdsSessionHost -TenantName $tenantname -HostPoolName $hostpool -Name $sessionhost -AllowNewSession:$true
   }
 
@@ -118,7 +118,7 @@ function Get-TolmanSqlConnectionString(){
     )
     $hostpool = "RemoteReview_HostPool"
     $tenantname = "RhythMedix Remote Review"
-     Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
+     Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" <#-credential (get-storedcredential -target O365Admin)#>
     if($null -ne $HostName)
     {
         Get-RdsUserSession -TenantName $tenantname -HostPoolName $hostpool | where-object { $_.SessionHostName -like $hostname} | out-host
@@ -268,7 +268,7 @@ function Get-TolmanSqlConnectionString(){
       Add-AdGroupMember "Azure AD Sync" $user #required group to sync to cloud
       Add-AdGroupMember "Domain ADP Users" $user #group that allows SSO with ADP
       
-      Connect-MsolService -Credential (Get-StoredCredential -Target O365Admin)
+      Connect-MsolService <#-credential (get-storedcredential -target O365Admin)#>
     
       DO
       {		
@@ -448,7 +448,7 @@ function Get-TolmanSqlConnectionString(){
       Remove-ADGroupMember -Identity "Azure AD Sync" -Members $samaccountname
   
       Sync-Azure
-      Connect-MsolService -Credential (Get-StoredCredential -Target O365Admin)
+      Connect-MsolService <#-credential (get-storedcredential -target O365Admin)#>
       Get-MsolUser -UserPrincipalName $upn -ReturnDeletedUsers | Restore-MsolUser
       Get-MsolUser -UserPrincipalName $upn | Set-MsolUser -ImmutableId ""
       
@@ -499,7 +499,7 @@ function Get-TolmanSqlConnectionString(){
       param(
           [Parameter(Mandatory=$True)]$username
       )
-      connect-AZaccount -credential (get-storedcredential -target O365Admin)
+      connect-AZaccount <#-credential (get-storedcredential -target O365Admin)#>
     get-azvm -resourcegroup 'RHythmedix-Infrastructure' | where-object {$_.Tags['tech'] -eq "$username@rhythmedix.com"} | Restart-AZVM
   }
 
@@ -508,7 +508,7 @@ function Get-TolmanSqlConnectionString(){
     param()
     if (!(get-pssession | where-object {$_.ConnectionURI -eq 'https://ps.compliance.protection.outlook.com/powershell-liveid/'}))
 	{
-        $Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://ps.compliance.protection.outlook.com/powershell-liveid/ -Credential (Get-StoredCredential -Target O365Admin) -Authentication Basic -AllowRedirection
+        $Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://ps.compliance.protection.outlook.com/powershell-liveid/ <#-credential (get-storedcredential -target O365Admin)#> -Authentication Basic -AllowRedirection
         start-sleep 5
         Import-PSSession $Session -DisableNameChecking -AllowClobber
        
@@ -521,7 +521,7 @@ function Connect-EXO{
     #$UserCredential = Get-StoredCredential -Target O365Admin
     if (!(get-pssession | where-object {$_.ConfigurationName -eq 'Microsoft.Exchange'}))
 	{
-        $ExoSession = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://outlook.office365.com/powershell-liveid/ -Credential (Get-StoredCredential -Target O365Admin) -Authentication Basic -AllowRedirection
+        $ExoSession = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://outlook.office365.com/powershell-liveid/ <#-credential (get-storedcredential -target O365Admin)#> -Authentication Basic -AllowRedirection
         start-sleep 5
         Import-PSSession $ExoSession -DisableNameChecking -AllowClobber
        
@@ -760,7 +760,7 @@ function Add-WVDAppUser
     $tenantname = "RhythMedix Remote Review"
     Add-AdGroupMember -Identity "Azure AD Domain Services" -Members (Get-ADUser -filter {EmailAddress -eq $upn})
     Sync-Azure
-    Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
+    Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" <#-credential (get-storedcredential -target O365Admin)#>
     #Remove-RdsAppGroupUser -TenantName $tenantname -HostPoolName $hostpool -AppGroupName "Desktop Application Group" -UserPrincipalName $upn
     Add-RdsAppGroupUser -TenantName $tenantname -HostPoolName $hostpool -AppGroupName $rdsappgroup -UserPrincipalName $upn
     #Sync-Azure   
@@ -776,7 +776,7 @@ function Invoke-WVDUserDisconnect
         [parameter(Mandatory=$True)]$user
         )
         $upn = $user + "@rhythmedix.com"    
-    Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
+    Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" <#-credential (get-storedcredential -target O365Admin)#>
     Get-RdsUserSession -TenantName "RhythMedix Remote Review" -HostPoolName "RemoteReview_HostPool" | where-object { $_.UserPrincipalName -eq $upn } | Invoke-RdsUserSessionLogoff -NoUserPrompt
 }
 
@@ -785,7 +785,7 @@ function Get-WVDUsers
     $rdsappgroup = "Remote Review"
     $hostpool = "RemoteReview_HostPool"
     $tenantname = "RhythMedix Remote Review"
-    Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
+    Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" <#-credential (get-storedcredential -target O365Admin)#>
     Get-RdsAppGroupUser -TenantName $tenantname -HostPoolName $hostpool -AppGroupName $rdsappgroup | Out-Host
 }
 
@@ -799,7 +799,7 @@ function Add-WVDDestkopUser
     $tenantname = "RhythMedix Remote Review"
     #Add-AdGroupMember -Identity "Azure AD Domain Services" -Members (Get-ADUser -filter {EmailAddress -eq $upn})
     #Sync-Azure
-    Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
+    Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" <#-credential (get-storedcredential -target O365Admin)#>
     Remove-RdsAppGroupUser -TenantName $tenantname -HostPoolName $hostpool -AppGroupName "Remote Review" -UserPrincipalName $upn
     Add-RdsAppGroupUser -TenantName $tenantname -HostPoolName $hostpool -AppGroupName $rdsappgroup -UserPrincipalName $upn
   
@@ -823,7 +823,7 @@ function New-WVDRemoteApp{
     New-RDSRemoteApp -TenantName $tenantname -HostPoolName $Hostpool -AppGroupName $rdsappgroup -Name $rdsappname -FilePath $filepath -FriendlyName $rdsappfriendlyname -IconPath $iconpath
     
   Add-AdGroupMember -Identity "Azure AD Domain Services" -Members (Get-ADUser -filter {EmailAddress -eq $upn})
-   #Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
+   #Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" <#-credential (get-storedcredential -target O365Admin)#>
     #Remove-RdsAppGroupUser -TenantName $tenantname -HostPoolName $hostpool -AppGroupName "Desktop Application Group" -UserPrincipalName $upn
     #Add-RdsAppGroupUser -TenantName $tenantname -HostPoolName $hostpool -AppGroupName $rdsappgroup -UserPrincipalName $upn
 #>   
