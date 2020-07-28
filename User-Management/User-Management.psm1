@@ -353,6 +353,7 @@ function Get-TolmanSqlConnectionString(){
                   Add-AdGroupMember "Hourly Employees" $user
                   Add-AdGroupMember "Monitoring Techs" -Members $User
                   Add-RhythmstarUser -FullName $FullName
+                  Add-WVDAppUser -user $samaccountName
                   if($remote -like 'Y')
                   {
                     Set-MsolUserLicense -UserPrincipalName $upn -AddLicenses "rhythmedix:AAD_Premium"
