@@ -509,7 +509,7 @@ function Get-TolmanSqlConnectionString(){
     param()
     if (!(get-pssession | where-object {$_.ConnectionURI -eq 'https://ps.compliance.protection.outlook.com/powershell-liveid/'}))
 	{
-        $Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://ps.compliance.protection.outlook.com/powershell-liveid/ <#-credential (get-storedcredential -target O365Admin)#> -Authentication Basic -AllowRedirection
+        $Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://ps.compliance.protection.outlook.com/powershell-liveid/ <#-credential (get-storedcredential -target O365Admin)#> -AllowRedirection
         start-sleep 5
         Import-PSSession $Session -DisableNameChecking -AllowClobber
        
@@ -522,7 +522,7 @@ function Connect-EXO{
     #$UserCredential = Get-StoredCredential -Target O365Admin
     if (!(get-pssession | where-object {$_.ConfigurationName -eq 'Microsoft.Exchange'}))
 	{
-        $ExoSession = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://outlook.office365.com/powershell-liveid/ <#-credential (get-storedcredential -target O365Admin)#> -Authentication Basic -AllowRedirection
+        $ExoSession = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://outlook.office365.com/powershell-liveid/ <#-credential (get-storedcredential -target O365Admin)#>  -AllowRedirection
         start-sleep 5
         Import-PSSession $ExoSession -DisableNameChecking -AllowClobber
        
@@ -767,7 +767,7 @@ function Add-WVDAppUser
     #Sync-Azure   
     $ip = '13.82.111.55'
     Add-IPWhitelist -UPN $upn -IP $ip
-    $ip = '40.117.194.209'
+    $ip = '52.168.25.162'
     Add-IPWhitelist -UPN $upn -IP $ip
 
 }
@@ -853,4 +853,22 @@ function New-WVDRemoteApp{
     function Set-AzureComputerSync
     {
         get-adcomputer $env:computername | Add-ADGroupMember "Azure AD Sync"
+    }
+
+ 
+    function update-associateIDs
+    {
+        [CmdletBinding()]
+        param (
+            
+            [Parameter(Mandatory=$true)]$CSVFile
+        )
+
+        $users = import-csv $CSVFile
+        ForEach($user in $users)
+        {
+            $username = $user.FirstName + " " + $user.LastName
+
+            Get-ADuser -filter {Displayname -like $username} | set-aduser -add @{'AssociateId' = $user.PositionID}
+        }
     }
