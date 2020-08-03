@@ -868,7 +868,13 @@ function New-WVDRemoteApp{
         ForEach($user in $users)
         {
             $username = $user.FirstName + " " + $user.LastName
-
-            Get-ADuser -filter {Displayname -like $username} | set-aduser -add @{'AssociateId' = $user.PositionID}
+            $username
+            try {
+                Get-ADuser -filter {Displayname -like $username} | set-aduser -add @{'AssociateId' = $user.PositionID}
+            }
+            catch {
+                Out-Host $Username + " update failed"
+            }
+           
         }
     }
