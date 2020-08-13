@@ -121,7 +121,7 @@ function Get-TolmanSqlConnectionString(){
      Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
     if($null -ne $HostName)
     {
-        Get-RdsUserSession -TenantName $tenantname -HostPoolName $hostpool | where-object { $_.SessionHostName -like $hostname} | out-host
+        Get-RdsUserSession -TenantName $tenantname -HostPoolName $hostpool | where-object { $_.SessionHostName -eq $hostname} | out-host
     }
     else 
     {
@@ -509,7 +509,7 @@ function Get-TolmanSqlConnectionString(){
     param()
     if (!(get-pssession | where-object {$_.ConnectionURI -eq 'https://ps.compliance.protection.outlook.com/powershell-liveid/'}))
 	{
-        $Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://ps.compliance.protection.outlook.com/powershell-liveid/ -credential (get-storedcredential -target O365Admin) -AllowRedirection
+        $Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://ps.compliance.protection.outlook.com/powershell-liveid/ -credential (get-storedcredential -target O365Admin) -Authentication Basic -AllowRedirection
         start-sleep 5
         Import-PSSession $Session -DisableNameChecking -AllowClobber
        
@@ -522,7 +522,7 @@ function Connect-EXO{
     #$UserCredential = Get-StoredCredential -Target O365Admin
     if (!(get-pssession | where-object {$_.ConfigurationName -eq 'Microsoft.Exchange'}))
 	{
-        $ExoSession = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://outlook.office365.com/powershell-liveid/ -credential (get-storedcredential -target O365Admin)  -AllowRedirection
+        $ExoSession = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://outlook.office365.com/powershell-liveid/ -credential (get-storedcredential -target O365Admin) -Authentication Basic  -AllowRedirection
         start-sleep 5
         Import-PSSession $ExoSession -DisableNameChecking -AllowClobber
        
@@ -861,21 +861,35 @@ function New-WVDRemoteApp{
         [CmdletBinding()]
         param (
             
-            [Parameter(Mandatory=$true)]$CSVFile
+            [Parameter(Mandatory=$false)]$CSVFile,
+            [Parameter(Mandatory=$false)]$SamAccountName,
+            [Parameter(Mandatory=$false)]$AssociateID
+            
         )
 
-        $users = import-csv $CSVFile
-        ForEach($user in $users)
+        if($CSVFile)
         {
-            $username = $user.FirstName + " " + $user.LastName
-            $username
-            try {
-                Get-ADuser -filter {Displayname -like $username} | set-aduser -add @{'AssociateId' = $user.PositionID}
+            $users = import-csv $CSVFile
+            ForEach($user in $users)
+            {
+                $username = $user.FirstName + " " + $user.LastName
+                $username
+                try 
+                {
+                    Get-ADuser -filter {Displayname -like $username} | set-aduser -Replace @{
+                        'AssociateId' = $user.AssociateID;
+                    }
+                }
+                catch {
+                    Out-Host $Username + " update failed"
+                }
+            
             }
-            catch {
-                Out-Host $Username + " update failed"
+        }
+        else {
+            get-ADuser $SamAccountName | set-aduser -Replace @{
+                'AssociateId' = $AssociateID;
             }
-           
         }
     }
 
