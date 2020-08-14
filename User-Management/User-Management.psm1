@@ -772,10 +772,11 @@ function Add-WVDAppUser
 
 }
 
-function connect-WVDAccount
+function Connect-WVDAccount
 {  
     Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
 }
+
 function Invoke-WVDUserDisconnect
 {
     param(
