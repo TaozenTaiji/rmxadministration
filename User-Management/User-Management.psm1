@@ -761,7 +761,7 @@ function Add-WVDAppUser
     $tenantname = "RhythMedix Remote Review"
     Add-AdGroupMember -Identity "Azure AD Domain Services" -Members (Get-ADUser -filter {EmailAddress -eq $upn})
     Sync-Azure
- #   Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
+    Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
     #Remove-RdsAppGroupUser -TenantName $tenantname -HostPoolName $hostpool -AppGroupName "Desktop Application Group" -UserPrincipalName $upn
     Add-RdsAppGroupUser -TenantName $tenantname -HostPoolName $hostpool -AppGroupName $rdsappgroup -UserPrincipalName $upn
     #Sync-Azure   
@@ -772,10 +772,6 @@ function Add-WVDAppUser
 
 }
 
-function Connect-WVDAccount
-{  
-    Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
-}
 
 function Invoke-WVDUserDisconnect
 {
@@ -783,7 +779,7 @@ function Invoke-WVDUserDisconnect
         [parameter(Mandatory=$True)]$user
         )
         $upn = $user + "@rhythmedix.com"    
-   # Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
+    Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
     Get-RdsUserSession -TenantName "RhythMedix Remote Review" -HostPoolName "RemoteReview_HostPool" | where-object { $_.UserPrincipalName -eq $upn } | Invoke-RdsUserSessionLogoff -NoUserPrompt
 }
 
@@ -792,7 +788,7 @@ function Get-WVDUsers
     $rdsappgroup = "Remote Review"
     $hostpool = "RemoteReview_HostPool"
     $tenantname = "RhythMedix Remote Review"
-    #Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
+    Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
     Get-RdsAppGroupUser -TenantName $tenantname -HostPoolName $hostpool -AppGroupName $rdsappgroup | Out-Host
 }
 
@@ -806,7 +802,7 @@ function Add-WVDDestkopUser
     $tenantname = "RhythMedix Remote Review"
     #Add-AdGroupMember -Identity "Azure AD Domain Services" -Members (Get-ADUser -filter {EmailAddress -eq $upn})
     #Sync-Azure
-  #  Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
+    Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
     Remove-RdsAppGroupUser -TenantName $tenantname -HostPoolName $hostpool -AppGroupName "Remote Review" -UserPrincipalName $upn
     Add-RdsAppGroupUser -TenantName $tenantname -HostPoolName $hostpool -AppGroupName $rdsappgroup -UserPrincipalName $upn
   
@@ -823,6 +819,7 @@ function New-WVDRemoteApp{
     [parameter(Mandatory=$true)]$rdsappfriendlyname
      )# "App Name in List"
    #>
+    Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
    New-RDSAppGroup -TenantName $tenantname -HostPoolName $hostpool -AppGroupName $rdsAppGroup -ResourceType "RemoteApp"
    New-RDSRemoteApp -TenantName $tenantname -HostPoolName $Hostpool -AppGroupName $rdsAppGroup -Name $rdsappname -FilePath $filepath -FriendlyName $rdsappfriendlyname -IconPath $iconpath
    <#
@@ -830,7 +827,7 @@ function New-WVDRemoteApp{
     New-RDSRemoteApp -TenantName $tenantname -HostPoolName $Hostpool -AppGroupName $rdsappgroup -Name $rdsappname -FilePath $filepath -FriendlyName $rdsappfriendlyname -IconPath $iconpath
     
   Add-AdGroupMember -Identity "Azure AD Domain Services" -Members (Get-ADUser -filter {EmailAddress -eq $upn})
-   #Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
+  
     #Remove-RdsAppGroupUser -TenantName $tenantname -HostPoolName $hostpool -AppGroupName "Desktop Application Group" -UserPrincipalName $upn
     #Add-RdsAppGroupUser -TenantName $tenantname -HostPoolName $hostpool -AppGroupName $rdsappgroup -UserPrincipalName $upn
 #>   
