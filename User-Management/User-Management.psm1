@@ -1,5 +1,5 @@
-Install-Module -Name InvokePsExec
-Install-Module -Name CredentialManager
+#Install-Module -Name InvokePsExec
+#/Install-Module -Name CredentialManager
 
 function Get-SqlConnectionString(){
     return "Data Source=tcp:rmxprod.database.windows.net,1433;Initial Catalog=rhythmedix;Authentication=Active Directory Integrated;"
@@ -930,3 +930,35 @@ function New-WVDRemoteApp{
             Add-ADGroupMember -identity 'Azure AD Sync'
             Sync-Azure
     }
+
+    Function Set-WebGLStatus{
+        [CmdLetBinding()]
+          Param(
+          [Parameter(Mandatory=$True)]$UPN,
+          [Parameter(Mandatory=$true)]$ENABLED
+          )
+          if($ENABLED = $true)
+            {
+                $flag = 1
+            }
+            else {
+                $flag = 0
+            }
+        
+          $SqlConnection = New-Object System.Data.SqlClient.SqlConnection
+          $SqlConnection.ConnectionString = Get-SqlConnectionString
+              $SqlCmd = New-Object System.Data.SqlClient.SqlCommand
+              $SqlCmd.CommandText = "dbo.spSystemSetWebGlFlag"  ## this is the stored proc name 
+              $SqlCmd.Connection = $SqlConnection  
+              $SqlCmd.CommandType = [System.Data.CommandType]::StoredProcedure  ## enum that specifies we are calling a SPROC
+              #SP format exec [spSystemSetWebGlFlag] @UserName = 'vzobrak@rhythmedix.com', @enabled = 1
+              $param1=$SqlCmd.Parameters.Add("@USERNAME" , [System.Data.SqlDbType]::VarChar)
+                  $param1.Value = $UPN 
+              $param2=$SqlCmd.Parameters.Add("@ENABLED" , [System.Data.SqlDbType]::VarChar)
+                  $param2.Value = $flag
+              $SqlConnection.Open()
+              $result = $SqlCmd.ExecuteNonQuery() 
+              Write-output "result=$result" 
+              $SqlConnection.Close()
+            
+      }
