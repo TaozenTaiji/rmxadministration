@@ -971,7 +971,7 @@ function New-WVDRemoteApp{
           )
         if($alias -eq "")
         {
-        invoke-WebRequest -UseBasicParsing https://rmx.health/ShortenUrl?code=7rxIKBuRNQ8fQBPvHgdH52jYgdupvmHLbLRrTtheyzJ9/Wr/1LaKvw== -ContentType "application/json" -Method POST -Body "{ 'longUrl':`'$longurl`'}"
+            invoke-WebRequest -UseBasicParsing https://rmx.health/ShortenUrl?code=7rxIKBuRNQ8fQBPvHgdH52jYgdupvmHLbLRrTtheyzJ9/Wr/1LaKvw== -ContentType "application/json" -Method POST -Body "{ 'longUrl':`'$longurl`'}"
         }
         else {
             invoke-WebRequest -UseBasicParsing https://rmx.health/ShortenUrl?code=7rxIKBuRNQ8fQBPvHgdH52jYgdupvmHLbLRrTtheyzJ9/Wr/1LaKvw== -ContentType "application/json" -Method POST -Body "{ 'longUrl':`'$longurl`', 'alias':`'$alias`'}"
