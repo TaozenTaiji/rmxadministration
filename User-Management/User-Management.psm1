@@ -962,3 +962,18 @@ function New-WVDRemoteApp{
               $SqlConnection.Close()
             
       }
+
+      function New-ShortUrl
+      {
+          param(
+              [Parameter(Mandatory=$true)]$longurl,
+              [ValidateLength(8,[int]::MaxValue)][Parameter(Mandatory=$false)]$alias
+          )
+        if($alias -eq "")
+        {
+        invoke-WebRequest -UseBasicParsing https://rmx.health/ShortenUrl?code=7rxIKBuRNQ8fQBPvHgdH52jYgdupvmHLbLRrTtheyzJ9/Wr/1LaKvw== -ContentType "application/json" -Method POST -Body "{ 'longUrl':"$longurl"}"
+        }
+        else {
+            invoke-WebRequest -UseBasicParsing https://rmx.health/ShortenUrl?code=7rxIKBuRNQ8fQBPvHgdH52jYgdupvmHLbLRrTtheyzJ9/Wr/1LaKvw== -ContentType "application/json" -Method POST -Body "{ 'longUrl':"$longurl", "alias":"$alias"}"
+        }
+      }
