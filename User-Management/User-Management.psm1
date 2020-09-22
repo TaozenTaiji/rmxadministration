@@ -385,6 +385,7 @@ function Get-TolmanSqlConnectionString(){
                   Add-O365GroupUser -GroupName 'Clinical Admin' -upn $upn
                   Add-O365GroupUser -GroupName 'Customer Service - Comments' -upn $upn
                   Add-DistributionGroupMember -Identity "Customer Service" -member $upn
+                  Add-WVDAppUser -user $samaccountName
 
           }
           'Logistics'
@@ -769,6 +770,9 @@ function Add-WVDAppUser
     Add-IPWhitelist -UPN $upn -IP $ip
     $ip = '52.168.25.162'
     Add-IPWhitelist -UPN $upn -IP $ip
+    $ip = '40.121.44.133'
+    Add-IPWhitelist -UPN $upn -IP $ip
+
 
 }
 
