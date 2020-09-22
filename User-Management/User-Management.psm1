@@ -438,8 +438,7 @@ function Get-TolmanSqlConnectionString(){
   
       
   }
-  function Convert-ADUserToCloudOnly 
-  {
+  function Convert-ADUserToCloudOnly   {
     [CmdLetBinding()]
       param
       (
@@ -495,8 +494,7 @@ function Get-TolmanSqlConnectionString(){
       #Disconnect-EXO
   }
 
-  function Restart-Holter
-  {
+  function Restart-Holter  {
       [cmdletBinding()]
       param(
           [Parameter(Mandatory=$True)]$username
@@ -611,8 +609,7 @@ function Get-DemoSqlConnectionString{
     return "Data Source=tcp:rmxdemo.database.windows.net,1433;Initial Catalog=RMX-Demo;Authentication=Active Directory Integrated;"
   }
  
-  function Update-Printers
-  {
+  function Update-Printers  {
       [cmdletbinding()]
       param(
           [Parameter(Mandatory=$False)]$ComputerName,
@@ -717,28 +714,26 @@ function Get-DemoSqlConnectionString{
       }
       
   }
-function Update-Productkey
-{
+
+function Update-Productkey{
 $License = (Get-WmiObject -query ‘select * from SoftwareLicensingService’).OA3xOriginalProductKey
 slmgr.vbs /ipk $license
 start-sleep 30
 slmgr.vbs /ato
 }
 
-function Add-AdminUser
-{
+function Add-AdminUser{
 net user /add rmxadmin Lozhkin1!
 WMIC USERACCOUNT WHERE "Name='rmxadmin'" SET PasswordExpires=FALSE
 net localgroup administrators rmxadmin /add
 net user administrator /active:no 
 }
-function Add-RMXVpn
-{
+
+function Add-RMXVpn{
 Add-VpnConnection -Name Rhythmedix -ServerAddress 50.228.161.254 -AllUserConnection $true -SplitTunneling $false -authenticationmethod mschapv2 -tunneltype l2tp -l2tppsk 73EE1DB45064CFF9 -encryptionlevel Required -passthru
 }
 
-function ProvisionBitlocker
-{
+function ProvisionBitlocker{
     Manage-BDE -On C: -SkipHardwareTest -ComputerName $env:COMPUTERNAME
     $RecoveryKey = Get-BitLockerVolume -MountPoint C: | Select-Object -ExpandProperty KeyProtector | Where-Object KeyProtectorType -eq 'RecoveryPassword'
 # In case there is no Recovery Password, lets create new one
@@ -751,8 +746,7 @@ if (!$RecoveryKey)
 }
 
 
-function Add-WVDAppUser
-{
+function Add-WVDAppUser{
     param(
     [parameter(Mandatory=$True)]$user
     )
@@ -777,8 +771,7 @@ function Add-WVDAppUser
 }
 
 
-function Invoke-WVDUserDisconnect
-{
+function Invoke-WVDUserDisconnect{
     param(
         [parameter(Mandatory=$True)]$user
         )
@@ -787,8 +780,7 @@ function Invoke-WVDUserDisconnect
     Get-RdsUserSession -TenantName "RhythMedix Remote Review" -HostPoolName "RemoteReview_HostPool" | where-object { $_.UserPrincipalName -eq $upn } | Invoke-RdsUserSessionLogoff -NoUserPrompt
 }
 
-function Get-WVDUsers
-{
+function Get-WVDUsers{
     $rdsappgroup = "Remote Review"
     $hostpool = "RemoteReview_HostPool"
     $tenantname = "RhythMedix Remote Review"
@@ -796,8 +788,7 @@ function Get-WVDUsers
     Get-RdsAppGroupUser -TenantName $tenantname -HostPoolName $hostpool -AppGroupName $rdsappgroup | Out-Host
 }
 
-function Add-WVDDestkopUser
-{
+function Add-WVDDestkopUser{
     param(
     [parameter(Mandatory=$True)]$UPN
     )
@@ -837,147 +828,140 @@ function New-WVDRemoteApp{
 #>   
 }
 
+function Disable-User{
+    [CmdletBinding()]
+    param (
+        
+        [Parameter()]$User
+    )
+    #-DateTime 'mm:dd:yyyy hh:mm:ss'
+    [DateTime]$WhenToDisable = Read-Host "What day and time should the user be disabled? (format 'mm/dd/yyyy hh:mm:ss')" 
+    Invoke-Command -ComputerName Galactica -ScriptBlock{
+        param($user,$WhenToDisable)
+        $tasktrigger = New-ScheduledTaskTrigger -Once -at $WhenToDisable
+        $taskprincipal =  New-ScheduledTaskPrincipal -UserId "SYSTEM" -RunLevel Highest -LogonType ServiceAccount
+        $taskaction = New-ScheduledTaskAction -Execute "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -Argument "-ExecutionPolicy ByPass -File C:\Disable-ADUser.ps1 $user"
+        
+        Register-ScheduledTask -TaskName "Disable $user" -Trigger $tasktrigger -Action $taskaction -Principal $taskprincipal
+    } -ArgumentList $user,$WhenToDisable
+}
 
-    function Disable-User
-    {
-        [CmdletBinding()]
-        param (
-         
-            [Parameter()]$User
-        )
-        #-DateTime 'mm:dd:yyyy hh:mm:ss'
-        [DateTime]$WhenToDisable = Read-Host "What day and time should the user be disabled? (format 'mm/dd/yyyy hh:mm:ss')" 
-        Invoke-Command -ComputerName Galactica -ScriptBlock{
-            param($user,$WhenToDisable)
-           $tasktrigger = New-ScheduledTaskTrigger -Once -at $WhenToDisable
-           $taskprincipal =  New-ScheduledTaskPrincipal -UserId "SYSTEM" -RunLevel Highest -LogonType ServiceAccount
-           $taskaction = New-ScheduledTaskAction -Execute "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -Argument "-ExecutionPolicy ByPass -File C:\Disable-ADUser.ps1 $user"
-          
-           Register-ScheduledTask -TaskName "Disable $user" -Trigger $tasktrigger -Action $taskaction -Principal $taskprincipal
-        } -ArgumentList $user,$WhenToDisable
-    }
-
-    function Set-AzureComputerSync
-    {
-        get-adcomputer $env:computername | Add-ADGroupMember "Azure AD Sync"
-    }
-
+function Set-AzureComputerSync{
+    get-adcomputer $env:computername | Add-ADGroupMember "Azure AD Sync"
+}
  
-    function update-associateIDs
-    {
-        [CmdletBinding()]
-        param (
-            
-            [Parameter(Mandatory=$false)]$CSVFile,
-            [Parameter(Mandatory=$false)]$SamAccountName,
-            [Parameter(Mandatory=$false)]$AssociateID
-            
-        )
+function update-associateIDs{
+    [CmdletBinding()]
+    param (
+        
+        [Parameter(Mandatory=$false)]$CSVFile,
+        [Parameter(Mandatory=$false)]$SamAccountName,
+        [Parameter(Mandatory=$false)]$AssociateID
+        
+    )
 
-        if($CSVFile)
+    if($CSVFile)
+    {
+        $users = import-csv $CSVFile
+        ForEach($user in $users)
         {
-            $users = import-csv $CSVFile
-            ForEach($user in $users)
+            $username = $user.FirstName + " " + $user.LastName
+            $username
+            try 
             {
-                $username = $user.FirstName + " " + $user.LastName
-                $username
-                try 
-                {
-                    Get-ADuser -filter {Displayname -like $username} | set-aduser -Replace @{
-                        'AssociateId' = $user.AssociateID;
-                    }
+                Get-ADuser -filter {Displayname -like $username} | set-aduser -Replace @{
+                    'AssociateId' = $user.AssociateID;
                 }
-                catch {
-                    Out-Host $Username + " update failed"
-                }
-            
             }
-        }
-        else {
-            get-ADuser $SamAccountName | set-aduser -Replace @{
-                'AssociateId' = $AssociateID;
-            }
-        }
-    }
-
-    function Convert-CloudUserToADSYnc
-    {
-        [CmdletBinding()]
-        param (
-            [Parameter(Mandatory=$true)]
-            [string]    
-            $upn,
-            [Parameter(Mandatory=$true)]
-            [string]    
-            $title,
-            [Parameter(Mandatory=$true)]
-            [string]    
-            $manager,
-            [Parameter(Mandatory=$true)]
-            [string]    
-            $department
-        )   
-            Connect-MsolService -credential (get-storedcredential -target O365Admin)
-            $clouduser = get-msoluser -userprincipalname $upn
-            $givenname = $clouduser.FirstName
-            $surname = $clouduser.LastName
-            $pattern = '[^a-zA-Z]'
-            $samaccountname = ($givenname[0] + ($surname -replace $pattern, '') + $suffix).tolower()
-            $tempPassword = convertto-securestring "Password1" -asplaintext -force
-            $displayname = $givenname + " $surname"
-
-            #$newTempPassword = convertto-securestring "Rhythmedix1!" -asplaintext -force
-
-            New-AdUser -Name $displayName -SamAccountName $samaccountName -AccountPassword $tempPassword -ChangePasswordAtLogon $false -Department $department -Title $title -DisplayName $displayName -EmailAddress $upn -GivenName $givenName -Surname $surname -UserPrincipalName $upn -EmployeeID $empNumber -Enabled $true -PassThru
-            $ID= [system.convert]::ToBase64String((Get-ADUser -filter {userprincipalname -eq $UPN}).objectGUid.ToByteArray())
-            Set-MsolUser -UserPrincipalName $upn -ImmutableId $ID
-            Add-ADGroupMember -identity 'Azure AD Sync'
-            Sync-Azure
-    }
-
-    Function Set-WebGLStatus{
-        [CmdLetBinding()]
-          Param(
-          [Parameter(Mandatory=$True)]$UPN,
-          [Parameter(Mandatory=$true)]$ENABLED
-          )
-          if($ENABLED = $true)
-            {
-                $flag = 1
-            }
-            else {
-                $flag = 0
+            catch {
+                Out-Host $Username + " update failed"
             }
         
-          $SqlConnection = New-Object System.Data.SqlClient.SqlConnection
-          $SqlConnection.ConnectionString = Get-SqlConnectionString
-              $SqlCmd = New-Object System.Data.SqlClient.SqlCommand
-              $SqlCmd.CommandText = "dbo.spSystemSetWebGlFlag"  ## this is the stored proc name 
-              $SqlCmd.Connection = $SqlConnection  
-              $SqlCmd.CommandType = [System.Data.CommandType]::StoredProcedure  ## enum that specifies we are calling a SPROC
-              #SP format exec [spSystemSetWebGlFlag] @UserName = 'vzobrak@rhythmedix.com', @enabled = 1
-              $param1=$SqlCmd.Parameters.Add("@USERNAME" , [System.Data.SqlDbType]::VarChar)
-                  $param1.Value = $UPN 
-              $param2=$SqlCmd.Parameters.Add("@ENABLED" , [System.Data.SqlDbType]::VarChar)
-                  $param2.Value = $flag
-              $SqlConnection.Open()
-              $result = $SqlCmd.ExecuteNonQuery() 
-              Write-output "result=$result" 
-              $SqlConnection.Close()
-            
-      }
+        }
+    }
+    else {
+        get-ADuser $SamAccountName | set-aduser -Replace @{
+            'AssociateId' = $AssociateID;
+        }
+    }
+}
 
-      function New-ShortUrl
-      {
-          param(
-              [Parameter(Mandatory=$true)]$longurl,
-              [ValidateLength(8,[int]::MaxValue)][Parameter(Mandatory=$false)]$alias
-          )
-        if($alias -eq "")
-        {
-            invoke-WebRequest -UseBasicParsing https://rmx.health/ShortenUrl?code=7rxIKBuRNQ8fQBPvHgdH52jYgdupvmHLbLRrTtheyzJ9/Wr/1LaKvw== -ContentType "application/json" -Method POST -Body "{ 'longUrl':`'$longurl`'}"
-        }
-        else {
-            invoke-WebRequest -UseBasicParsing https://rmx.health/ShortenUrl?code=7rxIKBuRNQ8fQBPvHgdH52jYgdupvmHLbLRrTtheyzJ9/Wr/1LaKvw== -ContentType "application/json" -Method POST -Body "{ 'longUrl':`'$longurl`', 'alias':`'$alias`'}"
-        }
-      }
+function Convert-CloudUserToADSYnc{
+[CmdletBinding()]
+param (
+    [Parameter(Mandatory=$true)]
+    [string]    
+    $upn,
+    [Parameter(Mandatory=$true)]
+    [string]    
+    $title,
+    [Parameter(Mandatory=$true)]
+    [string]    
+    $manager,
+    [Parameter(Mandatory=$true)]
+    [string]    
+    $department
+)   
+    Connect-MsolService -credential (get-storedcredential -target O365Admin)
+    $clouduser = get-msoluser -userprincipalname $upn
+    $givenname = $clouduser.FirstName
+    $surname = $clouduser.LastName
+    $pattern = '[^a-zA-Z]'
+    $samaccountname = ($givenname[0] + ($surname -replace $pattern, '') + $suffix).tolower()
+    $tempPassword = convertto-securestring "Password1" -asplaintext -force
+    $displayname = $givenname + " $surname"
+
+    #$newTempPassword = convertto-securestring "Rhythmedix1!" -asplaintext -force
+
+    New-AdUser -Name $displayName -SamAccountName $samaccountName -AccountPassword $tempPassword -ChangePasswordAtLogon $false -Department $department -Title $title -DisplayName $displayName -EmailAddress $upn -GivenName $givenName -Surname $surname -UserPrincipalName $upn -EmployeeID $empNumber -Enabled $true -PassThru
+    $ID= [system.convert]::ToBase64String((Get-ADUser -filter {userprincipalname -eq $UPN}).objectGUid.ToByteArray())
+    Set-MsolUser -UserPrincipalName $upn -ImmutableId $ID
+    Add-ADGroupMember -identity 'Azure AD Sync'
+    Sync-Azure
+}
+
+Function Set-WebGLStatus{
+[CmdLetBinding()]
+    Param(
+    [Parameter(Mandatory=$True)]$UPN,
+    [Parameter(Mandatory=$true)]$ENABLED
+    )
+    if($ENABLED = $true)
+    {
+        $flag = 1
+    }
+    else {
+        $flag = 0
+    }
+
+    $SqlConnection = New-Object System.Data.SqlClient.SqlConnection
+    $SqlConnection.ConnectionString = Get-SqlConnectionString
+        $SqlCmd = New-Object System.Data.SqlClient.SqlCommand
+        $SqlCmd.CommandText = "dbo.spSystemSetWebGlFlag"  ## this is the stored proc name 
+        $SqlCmd.Connection = $SqlConnection  
+        $SqlCmd.CommandType = [System.Data.CommandType]::StoredProcedure  ## enum that specifies we are calling a SPROC
+        #SP format exec [spSystemSetWebGlFlag] @UserName = 'vzobrak@rhythmedix.com', @enabled = 1
+        $param1=$SqlCmd.Parameters.Add("@USERNAME" , [System.Data.SqlDbType]::VarChar)
+            $param1.Value = $UPN 
+        $param2=$SqlCmd.Parameters.Add("@ENABLED" , [System.Data.SqlDbType]::VarChar)
+            $param2.Value = $flag
+        $SqlConnection.Open()
+        $result = $SqlCmd.ExecuteNonQuery() 
+        Write-output "result=$result" 
+        $SqlConnection.Close()
+    
+}
+
+function New-ShortUrl{
+    param(
+        [Parameter(Mandatory=$true)]$longurl,
+        [ValidateLength(8,[int]::MaxValue)][Parameter(Mandatory=$false)]$alias
+    )
+if($alias -eq "")
+{
+    invoke-WebRequest -UseBasicParsing https://rmx.health/ShortenUrl?code=7rxIKBuRNQ8fQBPvHgdH52jYgdupvmHLbLRrTtheyzJ9/Wr/1LaKvw== -ContentType "application/json" -Method POST -Body "{ 'longUrl':`'$longurl`'}"
+}
+else {
+    invoke-WebRequest -UseBasicParsing https://rmx.health/ShortenUrl?code=7rxIKBuRNQ8fQBPvHgdH52jYgdupvmHLbLRrTtheyzJ9/Wr/1LaKvw== -ContentType "application/json" -Method POST -Body "{ 'longUrl':`'$longurl`', 'alias':`'$alias`'}"
+}
+}
