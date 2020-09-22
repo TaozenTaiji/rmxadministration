@@ -466,8 +466,6 @@ function Get-TolmanSqlConnectionString(){
           Export-CSV "C:\\Distribution-List-Members.csv" -NoTypeInformation -Encoding UTF8
   }
   
-  
-
   Function Sync-Azure{
     [CmdLetBinding()]
     param()
@@ -588,8 +586,6 @@ function Add-CSVtoO365group{
     disconnect-exo
 }
 
-
-
 function Add-O365GroupUser{
     [CmdLetBinding()]
     param(
@@ -601,7 +597,6 @@ function Add-O365GroupUser{
     Write-host "Adding $upn to the group: $GroupName"
     Disconnect-EXO
 }
-
 
 function Get-DemoSqlConnectionString{
     [CmdLetBinding()]
@@ -745,7 +740,6 @@ if (!$RecoveryKey)
     Out-File -InputObject $RecoveryKey -FilePath '\\rocinante\shared\KeyBackupTempFolder\Key.txt'
 }
 
-
 function Add-WVDAppUser{
     param(
     [parameter(Mandatory=$True)]$user
@@ -850,7 +844,7 @@ function Set-AzureComputerSync{
     get-adcomputer $env:computername | Add-ADGroupMember "Azure AD Sync"
 }
  
-function update-associateIDs{
+function Update-AssociateIDs{
     [CmdletBinding()]
     param (
         
