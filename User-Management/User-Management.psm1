@@ -267,6 +267,7 @@ function Get-TolmanSqlConnectionString(){
       #Add-AdGroupMember "All Employees" $user
       Add-AdGroupMember "Azure AD Sync" $user #required group to sync to cloud
       Add-AdGroupMember "Domain ADP Users" $user #group that allows SSO with ADP
+      Add-AdGroupMember "Azure MFA Users" $user #group that turns on MFA Requirement
       
       Connect-MsolService -credential (get-storedcredential -target O365Admin)
     
