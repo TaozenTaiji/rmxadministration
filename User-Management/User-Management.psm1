@@ -471,9 +471,9 @@ function Get-TolmanSqlConnectionString(){
     [CmdLetBinding()]
     param()
       #PSFile version gives the on-screen feedback but requires ps1 file in the correct folder. The Command version doesn't give feedback but works regardless 
-   # Invoke-PsExec -ComputerName Galactica -PSFile "C:\powershell tools\Sync_Azure.ps1" 
+   # Invoke-PsExec -ComputerName galactica.rhythmedix.com -PSFile "C:\powershell tools\Sync_Azure.ps1" 
    Write-Host "Initializing Azure AD Delta Sync..." -ForegroundColor Yellow
-    Invoke-PsExec -ComputerName Galactica -Command {
+    Invoke-PsExec -ComputerName galactica.rhythmedix.com -credential (get-storedcredential -target O365Admin)  -Command {
       
   
       Start-ADSyncSyncCycle -PolicyType Delta
@@ -831,7 +831,7 @@ function Disable-User{
     )
     #-DateTime 'mm:dd:yyyy hh:mm:ss'
     [DateTime]$WhenToDisable = Read-Host "What day and time should the user be disabled? (format 'mm/dd/yyyy hh:mm:ss')" 
-    Invoke-Command -ComputerName Galactica -ScriptBlock{
+    Invoke-Command -ComputerName galactica.rhythmedix.com -ScriptBlock{
         param($user,$WhenToDisable)
         $tasktrigger = New-ScheduledTaskTrigger -Once -at $WhenToDisable
         $taskprincipal =  New-ScheduledTaskPrincipal -UserId "SYSTEM" -RunLevel Highest -LogonType ServiceAccount
