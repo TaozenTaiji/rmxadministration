@@ -746,20 +746,16 @@ function Add-WVDAppUser{
     [parameter(Mandatory=$True)]$user
     )
     $upn = $user + "@rhythmedix.com"  
-    $rdsappgroup = "Remote Review"
-    $hostpool = "RemoteReview_HostPool"
-    $tenantname = "RhythMedix Remote Review"
+
     Add-AdGroupMember -Identity "Azure AD Domain Services" -Members (Get-ADUser -filter {EmailAddress -eq $upn})
+    Add-AdGroupMember -Identity "Remote Portal Users" -Members (Get-ADUser -filter {EmailAddress -eq $upn})
     Sync-Azure
-    Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -credential (get-storedcredential -target O365Admin)
-    #Remove-RdsAppGroupUser -TenantName $tenantname -HostPoolName $hostpool -AppGroupName "Desktop Application Group" -UserPrincipalName $upn
-    Add-RdsAppGroupUser -TenantName $tenantname -HostPoolName $hostpool -AppGroupName $rdsappgroup -UserPrincipalName $upn
-    #Sync-Azure   
-    $ip = '13.82.111.55'
+       
+    $ip = '52.224.14.217'
     Add-IPWhitelist -UPN $upn -IP $ip
     $ip = '52.168.25.162'
     Add-IPWhitelist -UPN $upn -IP $ip
-    $ip = '40.121.44.133'
+    $ip = '52.224.14.199'
     Add-IPWhitelist -UPN $upn -IP $ip
 
 
