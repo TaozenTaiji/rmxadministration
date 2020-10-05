@@ -751,14 +751,22 @@ function Add-WVDAppUser{
     Add-AdGroupMember -Identity "Remote Portal Users" -Members (Get-ADUser -filter {EmailAddress -eq $upn})
     Sync-Azure
        
+    Add-WVDIps -upn $upn
+
+
+}
+
+function Add-WVDIps
+{
+   param(
+       [Parameter(Mandatory=$True)]$upn
+   ) 
     $ip = '52.224.14.217'
     Add-IPWhitelist -UPN $upn -IP $ip
     $ip = '52.168.25.162'
     Add-IPWhitelist -UPN $upn -IP $ip
     $ip = '52.224.14.199'
     Add-IPWhitelist -UPN $upn -IP $ip
-
-
 }
 
 
