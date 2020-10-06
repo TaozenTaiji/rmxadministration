@@ -763,7 +763,7 @@ function Add-WVDIps
    ) 
     $ip = '52.224.14.217'
     Add-IPWhitelist -UPN $upn -IP $ip
-    $ip = '52.168.25.162'
+    $ip = '52.224.14.214'
     Add-IPWhitelist -UPN $upn -IP $ip
     $ip = '52.224.14.199'
     Add-IPWhitelist -UPN $upn -IP $ip
