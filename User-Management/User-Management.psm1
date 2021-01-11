@@ -15,7 +15,10 @@ function Get-TolmanSqlConnectionString(){
       [Parameter(Mandatory=$True)]$FullName,
       [Parameter(Mandatory=$false)]$Portal
       )
-      
+      $FirstInitial = $FullName.Substring(0,1)
+      $FirstName, $LastName = $FullName -split "\s", 2
+      $accountName = $FirstInitial + $LastName #login name
+      $UPN = $accountName.ToLower() + "@rhythmedix.com" #userprincipalname
       if(!($portal))
       {
           $portal = read-host -prompt 'Which portal? RMX, Demo, or Tolman'
@@ -34,6 +37,8 @@ function Get-TolmanSqlConnectionString(){
           {
             $proceed = read-host -prompt "Add: $FullName to the Demo Rhythmstar Portal? Y/N"
             $SqlConnection.ConnectionString = Get-DemoSqlConnectionString
+            Connect-AzureAD -TenantDomain "demo.rhythmstar.com"
+            New-AzureADMSInvitation -InvitedUserDisplayName  $FullName -InvitedUserEmailAddress $upn -InviteRedirectURL https://myapps.microsoft.com -SendInvitationMessage $true
           }
           'Tolman'
           {
